@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard | Corpus Finance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="/admin/assets/images/favicon.ico">
+  <link rel="stylesheet" href="/admin/portal.css">
+</head>
+<body data-page="dashboard">
+  <div class="portal-shell">
+    <div class="portal-topbar">
+      <div class="portal-brand"><div class="brand-mark"><span></span><span></span></div><div class="brand-name">Corpus Finance</div></div>
+      <div class="portal-card-strip"><div class="portal-card-meta"><strong id="top-name">American Express Platinum</strong><small>Balance: <b id="top-balance">$0.00</b></small></div><div class="portal-card-ending"><div id="top-ending">0000</div><small>ENDING</small></div></div>
+      <div class="portal-topbar-right"><div class="portal-chip" data-count="0"></div><div class="portal-avatar" data-avatar>CB</div></div>
+    </div>
+    <div class="portal-layout">
+      <aside class="portal-sidebar">
+        <div class="portal-profile-card"><div class="portal-avatar" data-avatar>CB</div><div><div class="portal-profile-name" id="sidebar-name">User</div><div class="portal-profile-type" id="sidebar-type">Checking</div></div></div>
+        <div class="sidebar-icons"><div class="sidebar-icon has-count" data-count="0"></div><div class="sidebar-icon"></div></div>
+        <div class="nav-section-title">Main</div>
+        <nav class="portal-nav">
+          <a class="active" href="/dashboard"><span class="nav-glyph">⌂</span><span>Dashboard</span></a>
+          <a href="/deposit"><span class="nav-glyph">↓</span><span>Deposit</span></a>
+          <a href="/wire-transfer"><span class="nav-glyph">↑</span><span>Wire Transfer</span></a>
+          <a href="/dom-transfer"><span class="nav-glyph">≫</span><span>Domestic Transfer</span></a>
+          <a href="/loan"><span class="nav-glyph">↠</span><span>Loan</span></a>
+          <a href="/transaction"><span class="nav-glyph">☰</span><span>Transactions</span></a>
+        </nav>
+        <div class="nav-section-title">Account</div>
+        <nav class="portal-nav"><a href="/profile"><span class="nav-glyph">◌</span><span>Profile</span></a></nav>
+        <div class="support-box"><h3></h3>Chat<p>Chat with our live assistant.</p><a href="#">Open live Chat</a></div>
+      </aside>
+      <main class="portal-main">
+        <div id="flash-message"></div>
+        <div class="portal-header"><div><h1 id="page-title">Dashboard</h1><div class="header-line"></div></div><a class="btn btn-success" href="/deposit">Make Payment</a></div>
+        <div class="panel-grid cards">
+          <section class="panel summary-panel"><div><div class="summary-label">Account Balance</div><div class="summary-value" id="account-balance">$0.00</div><a class="summary-link" href="/transaction">View Statement</a></div></section>
+          <section class="panel summary-panel"><div><div class="summary-label">Loan Amount</div><div class="summary-value danger" id="loan-amount">$0.00</div><a class="summary-link warning" href="/loan">Pay Now</a></div></section>
+          <section class="panel support-alert"><h3>Live Chat</h3><p>Open the live assistant to continue the conversation.</p><a class="btn btn-white" href="#">Open Live Chat</a></section>
+        </div>
+        <div class="panel-grid two-thirds">
+          <section class="panel chart-box">
+            <div class="panel-title-row"><h2 class="panel-title">Balance History</h2><select class="select" style="max-width:140px"><option>Last 30 days</option><option>This Week</option><option>This Month</option><option>Today</option></select></div>
+            <canvas id="history-chart"></canvas>
+          </section>
+          <section class="panel quick-transfer">
+            <div class="panel-title-row"><h2 class="panel-title">Withdraw Money</h2></div>
+            <form action="/wire-transfer" method="get">
+              <div class="form-grid">
+                <div class="form-field"><label>Select Amount</label><div class="money-row"><input class="input" type="number" step="0.01" value="0" disabled><span>USD</span></div></div>
+                <div class="form-field"><label>Transfer to</label><select class="select" data-transfer-target disabled></select></div>
+              </div>
+              <div class="form-actions"><button class="btn btn-primary" type="submit">Open Transfer Page</button></div>
+            </form>
+          </section>
+        </div>
+        <section class="panel" style="margin-top:24px;">
+          <div class="panel-title-row"><h2 class="panel-title">Recent Transactions</h2><div id="recent-transaction-count"></div></div>
+          <div class="table-wrap">
+            <table class="portal-table">
+              <thead><tr><th>Status</th><th>Reference</th><th>Date</th><th>Category</th><th style="text-align:right;">Amount</th></tr></thead>
+              <tbody id="recent-transactions-body"><tr><td colspan="5">Loading transactions...</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+    <div class="floating-actions"><div class="floating-pill dark"><span class="floating-toggle"></span><span>Dark Colors</span></div><div class="floating-pill chat">Live Chat</div></div>
+  </div>
+  <script src="/admin/portal.js"></script>
+</body>
+</html>

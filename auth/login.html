@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg">
+
+
+<!-- Mirrored from corpus.developerplug.com/auth/login by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 24 Mar 2026 11:04:29 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head>
+
+    <meta charset="utf-8" />
+    <title>Login | Corpus Bank Script</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Themesbrand" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="../admin/assets/images/favicon.ico">
+
+
+    <!-- Filepond css -->
+    <link rel="stylesheet" href="../admin/assets/libs/dropzone/dropzone.css" type="text/css" />
+    <link rel="stylesheet" href="../admin/assets/libs/filepond/filepond.min.css" type="text/css" />
+    <link rel="stylesheet" href="../admin/assets/libs/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css">
+
+    <!-- Layout config Js -->
+    <script src="../admin/assets/js/layout.js"></script>
+    <!-- Bootstrap Css -->
+    <link href="../admin/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="../admin/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="../admin/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <!-- custom Css-->
+    <link href="../admin/assets/css/custom.min.css" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+    <!-- auth-page wrapper -->
+    <div class="auth-page-wrapper auth-bg-cover py-5 d-flex justify-content-center align-items-center min-vh-100">
+        <div class="bg-overlay"></div>
+        <!-- auth-page content -->
+        <div class="auth-page-content overflow-hidden pt-lg-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card overflow-hidden m-0">
+                            <div class="row justify-content-center g-0">
+                                <div class="col-lg-6">
+                                    <div class="p-lg-5 p-4 auth-one-bg h-100">
+                                        <div class="bg-overlay"></div>
+                                        <div class="position-relative h-100 d-flex flex-column">
+                                            <div class="mb-4">
+                                                <a href="../index.html" class="d-block">
+                                                    <img src="../assets/images/logo/logo.png"
+                                                        alt="" height="18">
+                                                </a>
+                                            </div>
+                                            <div class="mt-auto">
+                                                <div class="mb-3">
+                                                    <i class="ri-double-quotes-l display-4 text-success"></i>
+                                                </div>
+
+                                                <div id="qoutescarouselIndicators" class="carousel slide"
+                                                    data-bs-ride="carousel">
+                                                    <div class="carousel-indicators">
+                                                        <button type="button" data-bs-target="#qoutescarouselIndicators"
+                                                            data-bs-slide-to="0" class="active" aria-current="true"
+                                                            aria-label="Slide 1"></button>
+                                                        <button type="button" data-bs-target="#qoutescarouselIndicators"
+                                                            data-bs-slide-to="1" aria-label="Slide 2"></button>
+                                                        <button type="button" data-bs-target="#qoutescarouselIndicators"
+                                                            data-bs-slide-to="2" aria-label="Slide 3"></button>
+                                                    </div>
+                                                    <div class="carousel-inner text-center text-white-50 pb-5">
+                                                        <div class="carousel-item active">
+                                                            <p class="fs-15 fst-italic">"Join over 100,000 users across the
+                                                                globe to trade Giftcards effortlessly with
+                                                                Corpus Finance"</p>
+                                                        </div>
+                                                        <div class="carousel-item">
+                                                            <p class="fs-15 fst-italic">"
+                                                                Corpus Finance gives you access
+                                                                to a wide range of digital assets all at your convenience "
+                                                            </p>
+                                                        </div>
+                                                        <div class="carousel-item">
+                                                            <p class="fs-15 fst-italic">"
+                                                                Corpus Finance is for the one who
+                                                                longs for an easier and convenient way to get anything at
+                                                                anytime. Corpus Finance is for
+                                                                you. "</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- end carousel -->
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="p-lg-5 p-4">
+                                        <div>
+                                            <h5 class="text-primary">Welcome Back !</h5>
+                                            <p class="text-muted">Sign in to continue to
+                                                Corpus Finance </p>
+                                        </div>
+
+                                        <div class="mt-4">
+                                            <div id="auth-alert"></div>
+                                            <form class="needs-validation" novalidate
+                                                action="/login" method="post">
+                                                <div class="mb-3">
+                                                    <label for="useremail" class="form-label">Account ID <span
+                                                            class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" id="acct_number"
+                                                        placeholder="Enter Account ID" name="acct_number" required>
+                                                    <div class="invalid-feedback">
+                                                        Please enter account number
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <div class="float-end">
+                                                        <a href="#" class="text-muted">Forgot password?</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="password-input">Password <span
+                                                            class="text-danger">*</span></label>
+                                                    <div class="position-relative auth-pass-inputgroup">
+                                                        <input type="password" class="form-control pe-5 password-input"
+                                                            onpaste="return false" placeholder="Enter password"
+                                                            id="password-input" aria-describedby="passwordInput"
+                                                            name="password" required>
+                                                        <button
+                                                            class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon1"
+                                                            type="button" id="password-addon1"><i
+                                                                class="ri-eye-fill align-middle"></i></button>
+                                                        <div class="invalid-feedback">
+                                                            Please enter password
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value=""
+                                                        id="auth-remember-check">
+                                                    <label class="form-check-label" for="auth-remember-check">Remember
+                                                        me</label>
+                                                </div>
+
+
+                                                <div class="mt-4">
+                                                    <button class="btn btn-success w-100" type="submit">Sign in</button>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <div class="mt-5 text-center">
+                                            <p class="mb-0">Don't have an account ? <a href="../register.html"
+                                                    class="fw-semibold text-primary text-decoration-underline"> Signup</a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col -->
+
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end container -->
+        </div>
+        <!-- end auth page content -->
+    
+<footer class="footer">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <script>document.write(new Date().getFullYear())</script> © Corpus Bank Script
+            </div>
+            <div class="col-sm-6">
+                <div class="text-sm-end d-none d-sm-block">
+                    Design & Develop by Corpus Bank Script
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+<!-- end main content-->
+
+
+<!-- JAVASCRIPT -->
+<script src="../admin/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="../admin/assets/libs/simplebar/simplebar.min.js"></script>
+<script src="../admin/assets/libs/node-waves/waves.min.js"></script>
+<script src="../admin/assets/libs/feather-icons/feather.min.js"></script>
+<script src="../admin/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
+<script src="../admin/assets/js/plugins.js"></script>
+
+<!-- particles js -->
+<script src="../admin/assets/libs/particles.js/particles.js"></script>
+<!-- particles app js -->
+<script src="../admin/assets/js/pages/particles.app.js"></script>
+<!-- password-addon init -->
+<script src="../admin/assets/js/pages/password-addon.init.js"></script>
+
+
+
+<!-- apexcharts -->
+<script src="../admin/assets/libs/apexcharts/apexcharts.min.js"></script>
+
+<!-- Vector map-->
+<script src="../admin/assets/libs/jsvectormap/js/jsvectormap.min.js"></script>
+<script src="../admin/assets/libs/jsvectormap/maps/world-merc.js"></script>
+
+<!--Swiper slider js-->
+<script src="../admin/assets/libs/swiper/swiper-bundle.min.js"></script>
+
+<!-- Dashboard init -->
+<script src="../admin/assets/js/pages/dashboard-ecommerce.init.js"></script>
+
+
+<!-- list.js min js -->
+<script src="../admin/assets/libs/list.js/list.min.js"></script>
+<script src="../admin/assets/libs/list.pagination.js/list.pagination.min.js"></script>
+
+<!--crypto transactions init js-->
+<script src="../admin/assets/js/pages/crypto-transactions.init.js"></script>
+
+<script src="../admin/assets/js/pages/form-validation.init.js"></script>
+
+<script src="../admin/assets/js/pages/passowrd-create.init.js"></script>
+
+
+<!-- App js -->
+<script src="../admin/assets/js/app.js"></script>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get("error");
+    const success = params.get("success");
+    const alertNode = document.getElementById("auth-alert");
+
+    if (error) {
+        alertNode.innerHTML = `<div class="alert alert-danger" role="alert">${error}</div>`;
+    } else if (success) {
+        alertNode.innerHTML = `<div class="alert alert-success" role="alert">${success}</div>`;
+    }
+</script>
+</body>
+
+
+<!-- Mirrored from corpus.developerplug.com/auth/login by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 24 Mar 2026 11:04:49 GMT -->
+</html>

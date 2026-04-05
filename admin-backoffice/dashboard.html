@@ -1,0 +1,231 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin Back Office | Corpus Finance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/admin/portal.css">
+  <link rel="stylesheet" href="/admin-backoffice/dashboard.css">
+</head>
+<body>
+  <div class="admin-shell admin-shell-refined">
+    <header class="admin-header admin-header-refined">
+      <div>
+        <div class="admin-eyebrow">Admin Panel</div>
+        <h1>Back Office Dashboard</h1>
+        <div class="admin-note admin-header-note">Select a customer, manage their profile, and post transactions from one workspace.</div>
+      </div>
+      <div class="admin-header-actions">
+        <button class="btn btn-primary" type="button" id="show-create-user">Create User</button>
+        <form action="/admin/logout" method="post">
+          <button class="btn btn-outline admin-logout-btn" type="submit">Logout</button>
+        </form>
+      </div>
+    </header>
+    <main class="admin-main admin-main-refined">
+      <div id="admin-flash"></div>
+
+      <section class="admin-metrics" id="admin-metrics">
+        <article class="admin-stat-card">
+          <span>Total Users</span>
+          <strong id="metric-users">0</strong>
+          <small>All created customer records</small>
+        </article>
+        <article class="admin-stat-card">
+          <span>Total Transactions</span>
+          <strong id="metric-transactions">0</strong>
+          <small>Across all user accounts</small>
+        </article>
+        <article class="admin-stat-card">
+          <span>Completed Volume</span>
+          <strong id="metric-volume">$0.00</strong>
+          <small>Completed credits minus debits</small>
+        </article>
+      </section>
+
+      <section class="admin-workspace">
+        <aside class="panel admin-sidebar">
+          <div class="admin-panel-header">
+            <div>
+              <div class="admin-section-kicker">Users</div>
+              <h2 class="admin-section-title">Dashboard List</h2>
+            </div>
+            <button class="btn btn-outline" type="button" id="refresh-admin">Refresh</button>
+          </div>
+
+          <div class="admin-toolbar">
+            <input class="input" id="user-search" placeholder="Search by name or account number">
+          </div>
+
+          <div class="admin-user-list" id="admin-user-list">
+            <div class="admin-empty-state">Loading users...</div>
+          </div>
+        </aside>
+
+        <section class="admin-detail-column">
+          <section class="panel admin-create-panel is-hidden" id="create-user-panel">
+            <div class="admin-panel-header">
+              <div>
+                <div class="admin-section-kicker">Create</div>
+                <h2 class="admin-section-title">New User</h2>
+              </div>
+              <button class="btn btn-outline" type="button" id="hide-create-user">Close</button>
+            </div>
+
+            <form id="create-user-form">
+              <div class="form-grid">
+                <div class="form-field"><label>Account Number</label><input class="input" name="account_number" inputmode="numeric" maxlength="10" pattern="\d{10}" placeholder="10-digit account number" required></div>
+                <div class="form-field"><label>Currency</label><select class="select" name="preferred_currency"><option>USD</option><option>EUR</option><option>GBP</option><option>NGN</option></select></div>
+                <div class="form-field"><label>Opening Balance</label><input class="input" type="number" step="0.01" name="opening_balance" value="0"></div>
+                <div class="form-field"><label>First Name</label><input class="input" name="first_name" required></div>
+                <div class="form-field"><label>Last Name</label><input class="input" name="last_name" required></div>
+                <div class="form-field"><label>Username</label><input class="input" name="username" required></div>
+                <div class="form-field"><label>Password</label><input class="input" type="password" name="password" placeholder="Enter password" required></div>
+                <div class="form-field"><label>Email</label><input class="input" type="email" name="email" required></div>
+                <div class="form-field"><label>Phone</label><input class="input" name="phone" required></div>
+                <div class="form-field"><label>Gender</label><select class="select" name="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+                <div class="form-field"><label>Date of Birth</label><input class="input" type="date" name="date_of_birth"></div>
+                <div class="form-field"><label>Country</label><input class="input" name="country"></div>
+                <div class="form-field"><label>State</label><input class="input" name="state"></div>
+                <div class="form-field"><label>ZIP Code</label><input class="input" name="zip_code"></div>
+                <div class="form-field"><label>Marital Status</label><input class="input" name="marital_status"></div>
+                <div class="form-field"><label>SSN / ID</label><input class="input" name="ssn"></div>
+                <div class="form-field"><label>Occupation</label><input class="input" name="occupation"></div>
+                <div class="form-field"><label>Transfer Flow</label><select class="select" name="transfer_flow_state"><option value="pending_transfer">Pending Transfer</option><option value="transfer_completed">Transfer Completed</option><option value="invalid_otp">Invalid OTP</option></select></div>
+                <div class="form-field"><label>Transfer OTP</label><input class="input" name="transfer_otp_code" inputmode="numeric" maxlength="6" pattern="\d{6}" placeholder="6-digit OTP" required></div>
+                <div class="form-field" style="grid-column:1 / -1;"><label>Address</label><input class="input" name="address"></div>
+              </div>
+              <div class="form-actions"><button class="btn btn-primary" type="submit">Create User</button></div>
+            </form>
+          </section>
+
+          <section class="panel admin-detail-panel" id="user-detail-panel">
+            <div class="admin-detail-empty" id="user-detail-empty">
+              <h2>Select a user</h2>
+              <p>The selected user will open here with read, edit, delete, and transaction controls.</p>
+            </div>
+
+            <div class="admin-user-detail is-hidden" id="user-detail-content">
+              <div class="admin-panel-header">
+                <div>
+                  <div class="admin-section-kicker">Read</div>
+                  <h2 class="admin-section-title" id="detail-user-name">User Details</h2>
+                  <div class="admin-note" id="detail-user-account"></div>
+                </div>
+                <div class="admin-action-group">
+                  <button class="btn btn-outline" type="button" id="read-user-action">Read</button>
+                  <button class="btn btn-outline" type="button" id="edit-user-action">Edit</button>
+                  <button class="btn btn-primary admin-danger-btn" type="button" id="delete-user-action">Delete</button>
+                </div>
+              </div>
+
+              <div class="admin-user-summary">
+                <article class="admin-user-summary-card">
+                  <span>Current Balance</span>
+                  <strong id="detail-user-balance">$0.00</strong>
+                  <small id="detail-user-balance-note">Based on completed transactions</small>
+                </article>
+                <article class="admin-user-summary-card">
+                  <span>Total Transactions</span>
+                  <strong id="detail-user-transaction-count">0</strong>
+                  <small id="detail-user-created-at"></small>
+                </article>
+                <article class="admin-user-summary-card">
+                  <span>Preferred Currency</span>
+                  <strong id="detail-user-currency">USD</strong>
+                  <small id="detail-user-email"></small>
+                </article>
+              </div>
+
+              <div class="admin-tab-row">
+                <button class="admin-tab is-active" type="button" data-tab="profile">Profile</button>
+                <button class="admin-tab" type="button" data-tab="transactions">Transactions</button>
+                <button class="admin-tab" type="button" data-tab="loans">Loans</button>
+              </div>
+
+              <div class="admin-tab-panel is-active" data-panel="profile">
+                <form id="edit-user-form">
+                  <input type="hidden" name="id" id="edit-user-id">
+                  <div class="form-grid">
+                    <div class="form-field"><label>Account Number</label><input class="input" name="account_number" inputmode="numeric" maxlength="10" pattern="\d{10}" required></div>
+                    <div class="form-field"><label>Currency</label><select class="select" name="preferred_currency"><option>USD</option><option>EUR</option><option>GBP</option><option>NGN</option></select></div>
+                    <div class="form-field"><label>First Name</label><input class="input" name="first_name" required></div>
+                    <div class="form-field"><label>Last Name</label><input class="input" name="last_name" required></div>
+                    <div class="form-field"><label>Username</label><input class="input" name="username" required></div>
+                    <div class="form-field"><label>Email</label><input class="input" type="email" name="email" required></div>
+                    <div class="form-field"><label>Phone</label><input class="input" name="phone" required></div>
+                    <div class="form-field"><label>Gender</label><select class="select" name="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+                    <div class="form-field"><label>Date of Birth</label><input class="input" type="date" name="date_of_birth"></div>
+                    <div class="form-field"><label>Country</label><input class="input" name="country"></div>
+                    <div class="form-field"><label>State</label><input class="input" name="state"></div>
+                    <div class="form-field"><label>ZIP Code</label><input class="input" name="zip_code"></div>
+                    <div class="form-field"><label>Marital Status</label><input class="input" name="marital_status"></div>
+                    <div class="form-field"><label>SSN / ID</label><input class="input" name="ssn"></div>
+                    <div class="form-field"><label>Occupation</label><input class="input" name="occupation"></div>
+                    <div class="form-field"><label>Transfer Flow</label><select class="select" name="transfer_flow_state"><option value="pending_transfer">Pending Transfer</option><option value="transfer_completed">Transfer Completed</option><option value="invalid_otp">Invalid OTP</option></select></div>
+                    <div class="form-field"><label>Transfer OTP</label><input class="input" name="transfer_otp_code" inputmode="numeric" maxlength="6" pattern="\d{6}" placeholder="6-digit OTP" required></div>
+                    <div class="form-field"><label>New Password</label><input class="input" type="password" name="password" placeholder="Leave blank to keep current password"></div>
+                    <div class="form-field" style="grid-column:1 / -1;"><label>Address</label><input class="input" name="address"></div>
+                  </div>
+                  <div class="form-actions"><button class="btn btn-primary" type="submit">Save User</button></div>
+                </form>
+              </div>
+
+              <div class="admin-tab-panel" data-panel="transactions">
+                <div class="admin-transaction-layout">
+                  <section class="admin-subpanel">
+                    <div class="admin-subpanel-head">
+                      <div>
+                        <div class="admin-section-kicker">Create</div>
+                        <h3>New Transaction</h3>
+                      </div>
+                    </div>
+                    <form id="create-transaction-form">
+                      <input type="hidden" name="user_id" id="transaction-user-id">
+                      <div class="form-grid">
+                        <div class="form-field"><label>Date & Time</label><input class="input" type="datetime-local" name="created_at" required></div>
+                        <div class="form-field"><label>Reference</label><input class="input" name="reference_id" placeholder="Auto-generated if blank"></div>
+                        <div class="form-field"><label>Category</label><input class="input" name="category" value="manual_entry"></div>
+                        <div class="form-field"><label>Type</label><select class="select" name="type"><option value="credit">Credit</option><option value="debit">Debit</option></select></div>
+                        <div class="form-field"><label>Amount</label><input class="input" type="number" min="0.01" step="0.01" name="amount" required></div>
+                        <div class="form-field"><label>Status</label><select class="select" name="status"><option>Completed</option><option>Pending</option><option>Failed</option></select></div>
+                        <div class="form-field"><label>Currency</label><select class="select" name="currency_code"><option>USD</option><option>EUR</option><option>GBP</option><option>NGN</option></select></div>
+                        <div class="form-field" style="grid-column:1 / -1;"><label>Description</label><input class="input" name="description" placeholder="Describe the transaction" required></div>
+                      </div>
+                      <div class="form-actions"><button class="btn btn-primary" type="submit">Create Transaction</button></div>
+                    </form>
+                  </section>
+
+                  <section class="admin-subpanel">
+                    <div class="admin-subpanel-head">
+                      <div>
+                        <div class="admin-section-kicker">Read / Edit</div>
+                        <h3>Transaction History</h3>
+                      </div>
+                    </div>
+                    <div class="admin-transaction-list" id="user-transactions-list"></div>
+                  </section>
+                </div>
+              </div>
+
+              <div class="admin-tab-panel" data-panel="loans">
+                <div class="admin-subpanel-head">
+                  <div>
+                    <div class="admin-section-kicker">Loan Requests</div>
+                    <h3>User Loans</h3>
+                  </div>
+                </div>
+                <div class="admin-loan-list" id="user-loans-list"></div>
+              </div>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+  </div>
+  <script src="/admin-backoffice/app.js"></script>
+</body>
+</html>
+
+
+

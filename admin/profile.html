@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Profile | Corpus Finance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="/admin/assets/images/favicon.ico">
+  <link rel="stylesheet" href="/admin/portal.css">
+</head>
+<body data-page="profile">
+  <div class="portal-shell">
+    <div class="portal-topbar"><div class="portal-brand"><div class="brand-mark"><span></span><span></span></div><div class="brand-name">Corpus Finance</div></div><div class="portal-card-strip"><div class="portal-card-meta"><strong id="top-name">American Express Platinum</strong><small>Balance: <b id="top-balance">$0.00</b></small></div><div class="portal-card-ending"><div id="top-ending">0000</div><small>ENDING</small></div></div><div class="portal-topbar-right"><div class="portal-chip" data-count="0"></div><div class="portal-avatar" data-avatar>CB</div></div></div>
+    <div class="portal-layout">
+      <aside class="portal-sidebar"><div class="portal-profile-card"><div class="portal-avatar" data-avatar>CB</div><div><div class="portal-profile-name" id="sidebar-name">User</div><div class="portal-profile-type" id="sidebar-type">Checking</div></div></div><div class="sidebar-icons"><div class="sidebar-icon has-count" data-count="0"></div><div class="sidebar-icon"></div></div><div class="nav-section-title">Main</div><nav class="portal-nav"><a href="/dashboard"><span class="nav-glyph">⌂</span><span>Dashboard</span></a><a href="/deposit"><span class="nav-glyph">↓</span><span>Deposit</span></a><a href="/wire-transfer"><span class="nav-glyph">↑</span><span>Wire Transfer</span></a><a href="/dom-transfer"><span class="nav-glyph">≫</span><span>Domestic Transfer</span></a><a href="/loan"><span class="nav-glyph">↠</span><span>Loan</span></a><a href="/transaction"><span class="nav-glyph">☰</span><span>Transactions</span></a></nav><div class="nav-section-title">Account</div><nav class="portal-nav"><a class="active" href="/profile"><span class="nav-glyph">◌</span><span>Profile</span></a></nav><div class="support-box"><h3>Live Chat</h3><p>Chat with our live assistant.</p><a href="#">Open Live Chat</a></div></aside>
+      <main class="portal-main">
+        <div id="flash-message"></div>
+        <div class="portal-header"><div><h1 id="page-title">Profile Details</h1><div class="header-line"></div></div><form action="/logout" method="post"><button class="btn btn-outline" type="submit">Logout</button></form></div>
+        <div class="profile-grid">
+          <section class="panel profile-summary"><div class="portal-avatar" data-avatar>CB</div><h2 id="profile-name" style="margin:0;">User</h2><p style="color:#8b98ab;">Checking Account</p><div class="mini-meta"><div><span>Account Number</span><strong id="profile-account">-</strong></div><div><span>Email</span><strong id="profile-email">-</strong></div><div><span>Phone</span><strong id="profile-phone">-</strong></div></div></section>
+          <section class="panel">
+            <div class="panel-title-row"><h2 class="panel-title">Update Profile</h2></div>
+            <form action="/profile/update" method="post">
+              <div class="form-grid">
+                <div class="form-field"><label>First Name</label><input class="input" id="first_name" name="first_name" readonly></div>
+                <div class="form-field"><label>Last Name</label><input class="input" id="last_name" name="last_name" readonly></div>
+                <div class="form-field"><label>Email</label><input class="input" id="email" name="email"></div>
+                <div class="form-field"><label>Phone</label><input class="input" id="phone" name="phone"></div>
+                <div class="form-field"><label>Country</label><input class="input" id="country" name="country"></div>
+                <div class="form-field"><label>State</label><input class="input" id="state" name="state"></div>
+                <div class="form-field"><label>Occupation</label><input class="input" id="occupation" name="occupation"></div>
+                <div class="form-field" style="grid-column:1 / -1;"><label>Address</label><textarea class="textarea" id="address" name="address"></textarea></div>
+              </div>
+              <p class="admin-note" style="margin:14px 0 0;">Name changes are locked on this page. Update them from admin back office if needed.</p>
+              <div class="form-actions"><button class="btn btn-primary" type="submit">Save Changes</button></div>
+            </form>
+          </section>
+        </div>
+      </main>
+    </div>
+    <div class="floating-actions"><div class="floating-pill dark"><span class="floating-toggle"></span><span>Dark Colors</span></div><div class="floating-pill chat">Live Chat</div></div>
+  </div>
+  <script src="/admin/portal.js"></script>
+</body>
+</html>

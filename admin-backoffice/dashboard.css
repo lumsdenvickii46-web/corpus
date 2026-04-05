@@ -1,0 +1,124 @@
+
+.admin-shell-refined {
+  background:
+    radial-gradient(circle at top left, rgba(24, 92, 222, 0.12), transparent 32%),
+    radial-gradient(circle at top right, rgba(29, 201, 161, 0.10), transparent 28%),
+    linear-gradient(180deg, #f4f7fc 0%, #ecf2fb 100%);
+}
+.admin-header-refined {
+  padding: 28px 32px;
+  background: linear-gradient(135deg, #102347 0%, #173c76 58%, #115c9f 100%);
+  box-shadow: 0 18px 40px rgba(16, 35, 71, 0.18);
+}
+.admin-eyebrow {
+  margin-bottom: 8px;
+  color: rgba(255,255,255,.72);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.admin-header-note { color: rgba(255,255,255,.76); }
+.admin-header-actions { display: flex; align-items: center; gap: 12px; }
+.admin-logout-btn { color: #fff; border-color: rgba(255,255,255,.28); background: transparent; }
+.admin-main-refined { padding: 28px 32px 60px; }
+.admin-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-bottom: 22px; }
+.admin-stat-card,
+.admin-user-summary-card,
+.admin-subpanel,
+.admin-record-card,
+.admin-loan-card {
+  border: 1px solid rgba(181, 198, 225, 0.7);
+  background: rgba(255,255,255,.88);
+  box-shadow: 0 16px 40px rgba(35, 64, 116, 0.08);
+}
+.admin-stat-card { padding: 22px 24px; border-radius: 18px; }
+.admin-stat-card span,
+.admin-user-summary-card span { display: block; color: #6880a4; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.admin-stat-card strong,
+.admin-user-summary-card strong { display: block; margin: 12px 0 8px; color: #102347; font-size: 32px; line-height: 1.1; }
+.admin-stat-card small,
+.admin-user-summary-card small { color: #71839f; }
+.admin-workspace { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 22px; align-items: start; }
+.admin-sidebar,
+.admin-detail-panel,
+.admin-create-panel { border-radius: 22px; }
+.admin-panel-header,
+.admin-subpanel-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.admin-section-kicker { margin-bottom: 6px; color: #1e61cf; font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.admin-toolbar { margin: 18px 0; }
+.admin-user-list { display: grid; gap: 12px; max-height: calc(100vh - 330px); overflow: auto; padding-right: 4px; }
+.admin-user-card { width: 100%; border: 1px solid #dce6f7; border-radius: 18px; background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%); padding: 16px; text-align: left; cursor: pointer; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+.admin-user-card:hover,
+.admin-user-card.is-active { border-color: #1f66d7; box-shadow: 0 14px 28px rgba(24, 92, 222, 0.12); transform: translateY(-1px); }
+.admin-user-card-top,
+.admin-user-card-meta,
+.admin-user-card-stats,
+.admin-record-head,
+.admin-record-actions,
+.admin-action-group,
+.admin-tab-row { display: flex; gap: 12px; }
+.admin-user-card-top,
+.admin-record-head,
+.admin-record-actions,
+.admin-panel-header,
+.admin-subpanel-head { justify-content: space-between; }
+.admin-user-card-top strong { display: block; color: #102347; font-size: 16px; }
+.admin-user-card-top span,
+.admin-user-card-meta span,
+.admin-user-card-stats span,
+.admin-user-currency,
+.admin-record-head span,
+.admin-detail-empty p { color: #6c809f; }
+.admin-user-card-meta,
+.admin-user-card-stats { flex-wrap: wrap; margin-top: 10px; font-size: 13px; }
+.admin-user-card-stats { font-weight: 700; }
+.admin-detail-column { display: grid; gap: 22px; }
+.admin-create-panel.is-hidden,
+.admin-user-detail.is-hidden,
+.admin-tab-panel,
+.admin-detail-empty.is-hidden { display: none; }
+.admin-detail-empty { display: grid; place-items: center; min-height: 420px; border: 1px dashed #cfdaef; border-radius: 20px; background: linear-gradient(180deg, #fbfdff 0%, #f3f8ff 100%); text-align: center; }
+.admin-detail-empty h2 { margin: 0 0 10px; color: #102347; font-size: 30px; }
+.admin-user-summary { margin: 22px 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.admin-user-summary-card { padding: 20px 22px; border-radius: 18px; }
+.admin-tab-row { margin-bottom: 18px; flex-wrap: wrap; }
+.admin-tab { border: 1px solid #d3def1; border-radius: 999px; background: #f6f9ff; color: #53709c; padding: 10px 16px; font: inherit; font-weight: 700; cursor: pointer; }
+.admin-tab.is-active { border-color: #1f66d7; background: #1f66d7; color: #fff; }
+.admin-tab-panel.is-active { display: block; }
+.admin-transaction-layout { display: grid; grid-template-columns: minmax(320px, 420px) minmax(0, 1fr); gap: 18px; }
+.admin-subpanel { border-radius: 20px; padding: 20px; }
+.admin-subpanel h3 { margin: 0; color: #102347; font-size: 22px; }
+.admin-transaction-list,
+.admin-loan-list { display: grid; gap: 14px; }
+.admin-record-card,
+.admin-loan-card { border-radius: 18px; padding: 16px; }
+.admin-record-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+.admin-record-description { grid-column: 1 / -1; }
+.admin-record-actions { align-items: center; margin-top: 14px; }
+.admin-record-amount { font-weight: 700; }
+.admin-record-amount.positive { color: #0d9d56; }
+.admin-record-amount.negative { color: #d11e1e; }
+.admin-danger-btn { background: #d93145; }
+.admin-empty-state { padding: 24px 18px; border: 1px dashed #d0dbef; border-radius: 16px; color: #7286a4; text-align: center; }
+@media (max-width: 1280px) {
+  .admin-metrics,
+  .admin-user-summary,
+  .admin-transaction-layout,
+  .admin-workspace { grid-template-columns: 1fr; }
+
+  .admin-user-list { max-height: none; }
+}
+
+@media (max-width: 900px) {
+  .admin-header-refined,
+  .admin-main-refined { padding: 20px 16px; }
+
+  .admin-header-actions,
+  .admin-action-group,
+  .admin-record-actions,
+  .admin-panel-header,
+  .admin-subpanel-head { flex-direction: column; align-items: stretch; }
+
+  .admin-record-grid { grid-template-columns: 1fr; }
+}
