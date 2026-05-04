@@ -163,9 +163,12 @@
       return `
         <button class="admin-user-card${activeClass}" type="button" data-user-id="${user.id}">
           <div class="admin-user-card-top">
-            <div>
-              <strong>${escapeHtml(user.display_name)}</strong>
-              <span>${escapeHtml(user.account_number)}</span>
+            <div class="admin-user-identity">
+              <span class="admin-user-avatar${user.profile_image ? " has-image" : ""}" style="${user.profile_image ? `background-image:url(&quot;${escapeAttr(user.profile_image)}&quot;)` : ""}">${user.profile_image ? "" : initials(user.display_name)}</span>
+              <div>
+                <strong>${escapeHtml(user.display_name)}</strong>
+                <span>${escapeHtml(user.account_number)}</span>
+              </div>
             </div>
             <span class="admin-user-currency">${escapeHtml(user.preferred_currency || "USD")}</span>
           </div>
@@ -350,7 +353,7 @@
   }
 
   async function postForm(url, formData) {
-    const response = await fetch(url, { method: "POST", body: new URLSearchParams(formData), credentials: "same-origin" });
+    const response = await fetch(url, { method: "POST", body: formData, credentials: "same-origin" });
     return response.json();
   }
 
@@ -385,6 +388,16 @@
 
   function selected(value, expected) {
     return String(value || "").toUpperCase() === String(expected || "").toUpperCase() ? "selected" : "";
+  }
+
+  function initials(name) {
+    return String(name || "User")
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase() || "U";
   }
 
   function formatMoney(amount, currencyCode) {

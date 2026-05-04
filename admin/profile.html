@@ -19,7 +19,7 @@
           <section class="panel profile-summary"><div class="portal-avatar" data-avatar>CB</div><h2 id="profile-name" style="margin:0;">User</h2><p style="color:#8b98ab;">Checking Account</p><div class="mini-meta"><div><span>Account Number</span><strong id="profile-account">-</strong></div><div><span>Email</span><strong id="profile-email">-</strong></div><div><span>Phone</span><strong id="profile-phone">-</strong></div></div></section>
           <section class="panel">
             <div class="panel-title-row"><h2 class="panel-title">Update Profile</h2></div>
-            <form action="/profile/update" method="post">
+            <form action="/profile/update" method="post" enctype="multipart/form-data">
               <div class="form-grid">
                 <div class="form-field"><label>First Name</label><input class="input" id="first_name" name="first_name" readonly></div>
                 <div class="form-field"><label>Last Name</label><input class="input" id="last_name" name="last_name" readonly></div>
@@ -28,6 +28,8 @@
                 <div class="form-field"><label>Country</label><input class="input" id="country" name="country"></div>
                 <div class="form-field"><label>State</label><input class="input" id="state" name="state"></div>
                 <div class="form-field"><label>Occupation</label><input class="input" id="occupation" name="occupation"></div>
+                <div class="form-field" style="grid-column:1 / -1;"><label>Profile Image URL</label><input class="input" id="profile_image" name="profile_image" placeholder="https://example.com/customer-photo.jpg"></div>
+                <div class="form-field" style="grid-column:1 / -1;"><label>Upload Profile Image</label><input class="input" type="file" name="profile_image_file" accept="image/jpeg,image/png,image/webp"></div>
                 <div class="form-field" style="grid-column:1 / -1;"><label>Address</label><textarea class="textarea" id="address" name="address"></textarea></div>
               </div>
               <p class="admin-note" style="margin:14px 0 0;">Name changes are locked on this page. Update them from admin back office if needed.</p>

@@ -72,7 +72,7 @@
               <button class="btn btn-outline" type="button" id="hide-create-user">Close</button>
             </div>
 
-            <form id="create-user-form">
+            <form id="create-user-form" enctype="multipart/form-data">
               <div class="form-grid">
                 <div class="form-field"><label>Account Number</label><input class="input" name="account_number" inputmode="numeric" maxlength="10" pattern="\d{10}" placeholder="10-digit account number" required></div>
                 <div class="form-field"><label>Currency</label><select class="select" name="preferred_currency"><option>USD</option><option>EUR</option><option>GBP</option><option>NGN</option></select></div>
@@ -91,6 +91,8 @@
                 <div class="form-field"><label>Marital Status</label><input class="input" name="marital_status"></div>
                 <div class="form-field"><label>SSN / ID</label><input class="input" name="ssn"></div>
                 <div class="form-field"><label>Occupation</label><input class="input" name="occupation"></div>
+                <div class="form-field"><label>Profile Image URL</label><input class="input" name="profile_image" placeholder="https://example.com/customer-photo.jpg"></div>
+                <div class="form-field"><label>Upload Profile Image</label><input class="input" type="file" name="profile_image_file" accept="image/jpeg,image/png,image/webp"></div>
                 <div class="form-field"><label>Transfer Flow</label><select class="select" name="transfer_flow_state"><option value="pending_transfer">Pending Transfer</option><option value="transfer_completed">Transfer Completed</option><option value="invalid_otp">Invalid OTP</option></select></div>
                 <div class="form-field"><label>Transfer OTP</label><input class="input" name="transfer_otp_code" inputmode="numeric" maxlength="6" pattern="\d{6}" placeholder="6-digit OTP" required></div>
                 <div class="form-field" style="grid-column:1 / -1;"><label>Address</label><input class="input" name="address"></div>
@@ -144,7 +146,7 @@
               </div>
 
               <div class="admin-tab-panel is-active" data-panel="profile">
-                <form id="edit-user-form">
+                <form id="edit-user-form" enctype="multipart/form-data">
                   <input type="hidden" name="id" id="edit-user-id">
                   <div class="form-grid">
                     <div class="form-field"><label>Account Number</label><input class="input" name="account_number" inputmode="numeric" maxlength="10" pattern="\d{10}" required></div>
@@ -162,6 +164,8 @@
                     <div class="form-field"><label>Marital Status</label><input class="input" name="marital_status"></div>
                     <div class="form-field"><label>SSN / ID</label><input class="input" name="ssn"></div>
                     <div class="form-field"><label>Occupation</label><input class="input" name="occupation"></div>
+                    <div class="form-field"><label>Profile Image URL</label><input class="input" name="profile_image" placeholder="https://example.com/customer-photo.jpg"></div>
+                    <div class="form-field"><label>Upload Profile Image</label><input class="input" type="file" name="profile_image_file" accept="image/jpeg,image/png,image/webp"></div>
                     <div class="form-field"><label>Transfer Flow</label><select class="select" name="transfer_flow_state"><option value="pending_transfer">Pending Transfer</option><option value="transfer_completed">Transfer Completed</option><option value="invalid_otp">Invalid OTP</option></select></div>
                     <div class="form-field"><label>Transfer OTP</label><input class="input" name="transfer_otp_code" inputmode="numeric" maxlength="6" pattern="\d{6}" placeholder="6-digit OTP" required></div>
                     <div class="form-field"><label>New Password</label><input class="input" type="password" name="password" placeholder="Leave blank to keep current password"></div>

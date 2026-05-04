@@ -6,8 +6,20 @@
   const TRANSFER_PAGES = new Set(["wire-transfer", "dom-transfer"]);
   const transferStorageKey = TRANSFER_PAGES.has(page) ? `portal-transfer:${page}` : "";
   let portalTransactions = [];
+  const ICONS = {
+    dashboard: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10.5V20h5v-5h4v5h5v-9.5"/></svg>',
+    deposit: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>',
+    wire: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/><path d="M4 20h16"/></svg>',
+    domestic: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h13"/><path d="m13 3 4 4-4 4"/><path d="M20 17H7"/><path d="m11 13-4 4 4 4"/></svg>',
+    loan: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="M7 10h.01"/><path d="M17 14h.01"/><path d="M12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>',
+    transactions: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>',
+    profile: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>',
+    bell: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 21h4"/><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/></svg>',
+    card: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18"/><path d="M7 15h4"/></svg>',
+  };
 
   renderFlash(params.get("error"), params.get("success"));
+  hydrateNavigationIcons();
 
   fetch("/api/portal-data", { credentials: "same-origin" })
     .then((response) => {
@@ -32,7 +44,7 @@
 
   function hydrateShell(data) {
     const initials = `${data.user.firstName[0] || ""}${data.user.lastName[0] || ""}`.toUpperCase() || "CB";
-    document.querySelectorAll("[data-avatar]").forEach((node) => { node.textContent = initials; });
+    hydrateAvatars(initials, data.user.profileImage);
     setText("sidebar-name", data.user.fullName);
     setText("sidebar-type", "Checking");
     setText("top-name", "American Express Platinum");
@@ -90,6 +102,39 @@
     setValue("state", data.user.state);
     setValue("occupation", data.user.occupation);
     setValue("address", data.user.address);
+    setValue("profile_image", data.user.profileImage || "");
+  }
+
+  function hydrateAvatars(initials, imageUrl) {
+    document.querySelectorAll("[data-avatar]").forEach((node) => {
+      node.textContent = initials;
+      node.classList.remove("has-image");
+      node.style.backgroundImage = "";
+      if (imageUrl) {
+        node.textContent = "";
+        node.classList.add("has-image");
+        node.style.backgroundImage = `url("${String(imageUrl).replaceAll('"', "%22")}")`;
+      }
+    });
+  }
+
+  function hydrateNavigationIcons() {
+    document.querySelectorAll(".portal-nav a").forEach((link) => {
+      const label = (link.textContent || "").trim().toLowerCase();
+      const glyph = link.querySelector(".nav-glyph");
+      if (!glyph) return;
+      if (label.includes("dashboard")) glyph.innerHTML = ICONS.dashboard;
+      if (label.includes("deposit")) glyph.innerHTML = ICONS.deposit;
+      if (label.includes("wire")) glyph.innerHTML = ICONS.wire;
+      if (label.includes("domestic")) glyph.innerHTML = ICONS.domestic;
+      if (label.includes("loan")) glyph.innerHTML = ICONS.loan;
+      if (label.includes("transaction")) glyph.innerHTML = ICONS.transactions;
+      if (label.includes("profile")) glyph.innerHTML = ICONS.profile;
+    });
+
+    const sidebarIcons = document.querySelectorAll(".sidebar-icon");
+    if (sidebarIcons[0]) sidebarIcons[0].innerHTML = ICONS.bell;
+    if (sidebarIcons[1]) sidebarIcons[1].innerHTML = ICONS.card;
   }
 
   function attachProfileLinks() {

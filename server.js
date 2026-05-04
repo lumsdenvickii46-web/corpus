@@ -4,14 +4,18 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 const { URL } = require("node:url");
 const { Pool } = require("pg");
+const { DatabaseSync } = require("node:sqlite");
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 3000);
+const MAX_FORM_BYTES = 5 * 1024 * 1024;
+const AVATAR_UPLOAD_DIR = path.join(ROOT, "uploads", "avatars");
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Admin123!";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const DEFAULT_ADMIN_PASSWORD = "Admin123!";
 const DATABASE_URL = process.env.DATABASE_URL || "";
+const USE_POSTGRES = Boolean(DATABASE_URL);
 const PUBLIC_DENYLIST = new Set([
   "/server.js",
   "/start-server.cmd",
@@ -30,12 +34,7 @@ if (IS_PRODUCTION && !DATABASE_URL) {
   throw new Error("DATABASE_URL must be set in production.");
 }
 
-const pool = new Pool({
-  connectionString: DATABASE_URL || undefined,
-  ssl: DATABASE_URL && !/localhost|127\.0\.0\.1/i.test(DATABASE_URL)
-    ? { rejectUnauthorized: false }
-    : undefined,
-});
+const db = createDatabaseClient();
 
 const PROTECTED_PAGES = new Set([
   "/admin/dashboard.html",
@@ -71,8 +70,8 @@ const createUserSql = `
   INSERT INTO users (
     account_number, first_name, last_name, username, email, phone, gender,
     date_of_birth, country, state, zip_code, marital_status, ssn, occupation,
-    address, preferred_currency, transfer_flow_state, transfer_otp_code, password_hash
-  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+    address, profile_image, preferred_currency, transfer_flow_state, transfer_otp_code, password_hash
+  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
   RETURNING id
 `;
 const createTransactionSql = `
@@ -86,7 +85,7 @@ const createLoanSql = `
 `;
 
 async function initDatabase() {
-  await pool.query(`
+  await db.query(`
   CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     account_number TEXT NOT NULL UNIQUE,
@@ -104,6 +103,7 @@ async function initDatabase() {
     ssn TEXT,
     occupation TEXT,
     address TEXT,
+    profile_image TEXT NOT NULL DEFAULT '',
     password_hash TEXT NOT NULL,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     preferred_currency TEXT NOT NULL DEFAULT 'USD',
@@ -154,13 +154,14 @@ async function initDatabase() {
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
 `);
-  await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS preferred_currency TEXT NOT NULL DEFAULT 'USD'");
-  await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS transfer_flow_state TEXT NOT NULL DEFAULT 'pending_transfer'");
-  await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS transfer_otp_code TEXT NOT NULL DEFAULT ''");
-  await pool.query("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS reference_id TEXT");
-  await pool.query("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS category TEXT");
-  await pool.query("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS currency_code TEXT NOT NULL DEFAULT 'USD'");
-  await pool.query("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS metadata_json TEXT");
+  await db.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS preferred_currency TEXT NOT NULL DEFAULT 'USD'");
+  await db.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_image TEXT NOT NULL DEFAULT ''");
+  await db.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS transfer_flow_state TEXT NOT NULL DEFAULT 'pending_transfer'");
+  await db.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS transfer_otp_code TEXT NOT NULL DEFAULT ''");
+  await db.query("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS reference_id TEXT");
+  await db.query("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS category TEXT");
+  await db.query("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS currency_code TEXT NOT NULL DEFAULT 'USD'");
+  await db.query("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS metadata_json TEXT");
 
   const countUsers = Number((await dbGet("SELECT COUNT(*) AS total FROM users")).total);
   if (countUsers === 0 && !IS_PRODUCTION) {
@@ -169,21 +170,81 @@ async function initDatabase() {
 }
 
 async function dbGet(sql, params = []) {
-  const result = await pool.query(sql, params);
+  const result = await db.query(sql, params);
   return result.rows[0] || null;
 }
 
 async function dbAll(sql, params = []) {
-  const result = await pool.query(sql, params);
+  const result = await db.query(sql, params);
   return result.rows;
 }
 
 async function dbRun(sql, params = []) {
-  const result = await pool.query(sql, params);
+  const result = await db.query(sql, params);
   return {
     rowCount: result.rowCount,
     lastInsertRowid: result.rows[0] ? result.rows[0].id : undefined,
   };
+}
+
+function createDatabaseClient() {
+  if (USE_POSTGRES) {
+    const pool = new Pool({
+      connectionString: DATABASE_URL,
+      ssl: !/localhost|127\.0\.0\.1/i.test(DATABASE_URL)
+        ? { rejectUnauthorized: false }
+        : undefined,
+    });
+
+    return {
+      query(sql, params = []) {
+        return pool.query(sql, params);
+      },
+    };
+  }
+
+  const sqlite = new DatabaseSync(path.join(ROOT, "data", "corpus.sqlite"));
+  sqlite.exec("PRAGMA foreign_keys = ON");
+
+  return {
+    async query(sql, params = []) {
+      const statements = normalizeSqlForSqlite(sql)
+        .split(";")
+        .map((statement) => statement.trim())
+        .filter(Boolean);
+
+      let rows = [];
+      let rowCount = 0;
+
+      for (const statement of statements) {
+        try {
+          const prepared = sqlite.prepare(statement);
+          if (/^\s*SELECT\b/i.test(statement) || /\bRETURNING\b/i.test(statement)) {
+            rows = prepared.all(...params);
+            rowCount = rows.length;
+          } else {
+            const result = prepared.run(...params);
+            rowCount = result.changes || 0;
+            rows = result.lastInsertRowid ? [{ id: result.lastInsertRowid }] : [];
+          }
+        } catch (error) {
+          if (/duplicate column name/i.test(error.message)) {
+            continue;
+          }
+          throw error;
+        }
+      }
+
+      return { rows, rowCount };
+    },
+  };
+}
+
+function normalizeSqlForSqlite(sql) {
+  return sql
+    .replace(/\bSERIAL\s+PRIMARY\s+KEY\b/gi, "INTEGER PRIMARY KEY AUTOINCREMENT")
+    .replace(/\bADD\s+COLUMN\s+IF\s+NOT\s+EXISTS\b/gi, "ADD COLUMN")
+    .replace(/\$[0-9]+/g, "?");
 }
 
 const MIME_TYPES = {
@@ -250,7 +311,7 @@ const server = http.createServer(async (req, res) => {
         ok: true,
         now: new Date().toISOString(),
         node: process.version,
-        database: DATABASE_URL ? "postgres" : "local-postgres",
+        database: USE_POSTGRES ? "postgres" : "sqlite",
       });
     }
 
@@ -364,7 +425,7 @@ async function main() {
   server.listen(PORT, () => {
     console.log(`Corpus local server running at http://localhost:${PORT}`);
     console.log(`Environment: ${IS_PRODUCTION ? "production" : "development"}`);
-    console.log("Database: Postgres");
+    console.log(`Database: ${USE_POSTGRES ? "Postgres" : "SQLite"}`);
     if (!IS_PRODUCTION) {
       console.log("Demo login: account 10000001 / password Password123!");
       console.log(`Admin login: ${ADMIN_USERNAME} / ${ADMIN_PASSWORD}`);
@@ -391,6 +452,7 @@ async function seedDemoData() {
     "1234",
     "Account Manager",
     "123 Demo Street",
+    "/assets/home/images/MANredd.png",
     "USD",
     "pending_transfer",
     "240298",
@@ -495,6 +557,7 @@ async function handleRegister(res, form) {
   const ssn = (form.acct_ssn || "").trim();
   const occupation = (form.occupation || "").trim();
   const address = (form.address || "").trim();
+  const profileImage = sanitizeProfileImageUrl(form.profile_image);
   const password = form.password || "";
   const confirmPassword = form.confirm_password || "";
 
@@ -531,6 +594,7 @@ async function handleRegister(res, form) {
       ssn,
       occupation,
       address,
+      profileImage,
       "USD",
       "pending_transfer",
       "",
@@ -788,6 +852,12 @@ async function handleProfileUpdate(req, res, form) {
     return;
   }
 
+  try {
+    await applyUploadedProfileImage(form);
+  } catch (error) {
+    return redirect(res, `/profile?error=${encodeURIComponent(error.message)}`);
+  }
+
   const payload = await sanitizeUserPayload(form, { requirePassword: false, allowBlankPassword: true });
   payload.firstName = session.first_name;
   payload.lastName = session.last_name;
@@ -811,8 +881,8 @@ async function handleProfileUpdate(req, res, form) {
   try {
     await dbRun(
       `UPDATE users
-       SET first_name = $1, last_name = $2, email = $3, phone = $4, gender = $5, date_of_birth = $6, country = $7, state = $8, zip_code = $9, marital_status = $10, occupation = $11, address = $12, preferred_currency = $13
-       WHERE id = $14`,
+       SET first_name = $1, last_name = $2, email = $3, phone = $4, gender = $5, date_of_birth = $6, country = $7, state = $8, zip_code = $9, marital_status = $10, occupation = $11, address = $12, profile_image = $13, preferred_currency = $14
+       WHERE id = $15`,
       [
       payload.firstName,
       payload.lastName,
@@ -826,6 +896,7 @@ async function handleProfileUpdate(req, res, form) {
       payload.maritalStatus,
       payload.occupation,
       payload.address,
+      payload.profileImage,
       payload.preferredCurrency,
       session.id
       ]
@@ -900,6 +971,7 @@ async function handlePortalData(req, res) {
       ssn: session.ssn,
       occupation: session.occupation,
       address: session.address,
+      profileImage: session.profile_image || "",
       preferredCurrency: session.preferred_currency || "USD",
       createdAt: session.created_at,
     },
@@ -930,7 +1002,7 @@ async function handleAdminData(req, res) {
 
   const users = (await dbAll(`
     SELECT id, account_number, first_name, last_name, username, email, phone, gender, date_of_birth,
-           country, state, zip_code, marital_status, ssn, occupation, address, preferred_currency, transfer_flow_state, transfer_otp_code, created_at
+           country, state, zip_code, marital_status, ssn, occupation, address, profile_image, preferred_currency, transfer_flow_state, transfer_otp_code, created_at
     FROM users
     ORDER BY id ASC
   `)).map((user) => ({
@@ -970,6 +1042,7 @@ async function handleAdminCreateUser(req, res, form) {
   }
 
   try {
+    await applyUploadedProfileImage(form);
     const payload = await sanitizeUserPayload(form, { allowBlankPassword: false });
     const validationError = await validateAdminUserPayload(payload);
     if (validationError) {
@@ -992,6 +1065,7 @@ async function handleAdminCreateUser(req, res, form) {
       payload.ssn,
       payload.occupation,
       payload.address,
+      payload.profileImage,
       payload.preferredCurrency,
       payload.transferFlowState,
       payload.transferOtpCode,
@@ -1034,6 +1108,12 @@ async function handleAdminUpdateUser(req, res, form) {
     return respondJson(res, 404, { error: "User not found" });
   }
 
+  try {
+    await applyUploadedProfileImage(form);
+  } catch (error) {
+    return respondJson(res, 400, { error: error.message });
+  }
+
   const payload = await sanitizeUserPayload(form, { requirePassword: false, allowBlankPassword: true });
   payload.accountNumber = payload.accountNumber || existingUser.account_number;
   payload.firstName = payload.firstName || existingUser.first_name;
@@ -1050,6 +1130,9 @@ async function handleAdminUpdateUser(req, res, form) {
   payload.ssn = payload.ssn || existingUser.ssn || "";
   payload.occupation = payload.occupation || existingUser.occupation || "";
   payload.address = payload.address || existingUser.address || "";
+  if (!Object.prototype.hasOwnProperty.call(form, "profile_image")) {
+    payload.profileImage = existingUser.profile_image || "";
+  }
   payload.preferredCurrency = payload.preferredCurrency || existingUser.preferred_currency || "USD";
   payload.transferFlowState = payload.transferFlowState || existingUser.transfer_flow_state || "pending_transfer";
   payload.transferOtpCode = payload.transferOtpCode || existingUser.transfer_otp_code || "";
@@ -1062,8 +1145,8 @@ async function handleAdminUpdateUser(req, res, form) {
   try {
     await dbRun(
       `UPDATE users
-       SET account_number = $1, first_name = $2, last_name = $3, username = $4, email = $5, phone = $6, gender = $7, date_of_birth = $8, country = $9, state = $10, zip_code = $11, marital_status = $12, ssn = $13, occupation = $14, address = $15, preferred_currency = $16, transfer_flow_state = $17, transfer_otp_code = $18
-       WHERE id = $19`,
+       SET account_number = $1, first_name = $2, last_name = $3, username = $4, email = $5, phone = $6, gender = $7, date_of_birth = $8, country = $9, state = $10, zip_code = $11, marital_status = $12, ssn = $13, occupation = $14, address = $15, profile_image = $16, preferred_currency = $17, transfer_flow_state = $18, transfer_otp_code = $19
+       WHERE id = $20`,
       [
         payload.accountNumber,
         payload.firstName,
@@ -1080,6 +1163,7 @@ async function handleAdminUpdateUser(req, res, form) {
         payload.ssn,
         payload.occupation,
         payload.address,
+        payload.profileImage,
         payload.preferredCurrency,
         payload.transferFlowState,
         payload.transferOtpCode,
@@ -1374,19 +1458,90 @@ function buildChartSeries(transactions) {
 }
 
 function collectForm(req, res, callback) {
-  let body = "";
+  const chunks = [];
+  let total = 0;
   req.on("data", (chunk) => {
-    body += chunk.toString();
-    if (body.length > 1_000_000) {
+    total += chunk.length;
+    if (total > MAX_FORM_BYTES) {
       req.destroy();
+      return;
     }
+    chunks.push(chunk);
   });
   req.on("end", () => {
-    Promise.resolve(callback(Object.fromEntries(new URLSearchParams(body)))).catch((error) => {
+    Promise.resolve(parseRequestForm(req, Buffer.concat(chunks)))
+      .then((form) => callback(form))
+      .catch((error) => {
       console.error(error);
       respondText(res, 500, "Internal Server Error");
     });
   });
+}
+
+async function parseRequestForm(req, body) {
+  const contentType = req.headers["content-type"] || "";
+  if (/multipart\/form-data/i.test(contentType)) {
+    return parseMultipartForm(body, contentType);
+  }
+  return Object.fromEntries(new URLSearchParams(body.toString()));
+}
+
+function parseMultipartForm(body, contentType) {
+  const boundaryMatch = contentType.match(/boundary=(?:"([^"]+)"|([^;]+))/i);
+  if (!boundaryMatch) {
+    throw new Error("Missing multipart boundary");
+  }
+
+  const boundary = Buffer.from(`--${boundaryMatch[1] || boundaryMatch[2]}`);
+  const form = {};
+  const files = {};
+  let cursor = 0;
+
+  while (cursor < body.length) {
+    const boundaryStart = body.indexOf(boundary, cursor);
+    if (boundaryStart === -1) break;
+    const partStart = boundaryStart + boundary.length;
+    if (body[partStart] === 45 && body[partStart + 1] === 45) break;
+
+    const contentStart = body.indexOf(Buffer.from("\r\n\r\n"), partStart);
+    if (contentStart === -1) break;
+    const headerText = body.slice(partStart + 2, contentStart).toString("utf8");
+    let nextBoundary = body.indexOf(boundary, contentStart + 4);
+    if (nextBoundary === -1) nextBoundary = body.length;
+
+    let contentEnd = nextBoundary;
+    if (body[contentEnd - 2] === 13 && body[contentEnd - 1] === 10) {
+      contentEnd -= 2;
+    }
+    const content = body.slice(contentStart + 4, contentEnd);
+    const nameMatch = headerText.match(/name="([^"]+)"/i);
+    if (!nameMatch) {
+      cursor = nextBoundary;
+      continue;
+    }
+
+    const filenameMatch = headerText.match(/filename="([^"]*)"/i);
+    const contentTypeMatch = headerText.match(/content-type:\s*([^\r\n]+)/i);
+    const name = nameMatch[1];
+
+    if (filenameMatch && filenameMatch[1]) {
+      files[name] = {
+        filename: path.basename(filenameMatch[1]),
+        contentType: contentTypeMatch ? contentTypeMatch[1].trim().toLowerCase() : "",
+        buffer: content,
+      };
+    } else {
+      form[name] = content.toString("utf8");
+    }
+
+    cursor = nextBoundary;
+  }
+
+  Object.defineProperty(form, "__files", {
+    value: files,
+    enumerable: false,
+  });
+  return form;
 }
 
 async function nextAccountNumber() {
@@ -1535,11 +1690,46 @@ async function sanitizeUserPayload(form, options = {}) {
     ssn: String(form.ssn || form.acct_ssn || "").trim(),
     occupation: String(form.occupation || "").trim(),
     address: String(form.address || "").trim(),
+    profileImage: sanitizeProfileImageUrl(form.profile_image),
     preferredCurrency: String(form.preferred_currency || "USD").trim().toUpperCase(),
     transferFlowState: normalizeTransferFlowState(form.transfer_flow_state),
     transferOtpCode: String(form.transfer_otp_code || "").trim(),
     password: options.allowBlankPassword ? password : password,
   };
+}
+
+function sanitizeProfileImageUrl(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  if (/^https?:\/\/[^\s"<>]+$/i.test(raw)) return raw;
+  if (/^\/(?:assets|admin\/assets)\/[^\s"<>]+$/i.test(raw)) return raw;
+  if (/^\/uploads\/avatars\/[a-z0-9_.-]+$/i.test(raw)) return raw;
+  return "";
+}
+
+async function applyUploadedProfileImage(form) {
+  const file = form.__files && form.__files.profile_image_file;
+  if (!file || !file.buffer || !file.buffer.length) {
+    return;
+  }
+
+  const allowedTypes = new Map([
+    ["image/jpeg", "jpg"],
+    ["image/png", "png"],
+    ["image/webp", "webp"],
+  ]);
+  const extension = allowedTypes.get(file.contentType);
+  if (!extension) {
+    throw new Error("Profile image must be a JPEG, PNG, or WebP file");
+  }
+  if (file.buffer.length > 2 * 1024 * 1024) {
+    throw new Error("Profile image must be 2MB or smaller");
+  }
+
+  await fs.promises.mkdir(AVATAR_UPLOAD_DIR, { recursive: true });
+  const filename = `${Date.now()}-${crypto.randomBytes(8).toString("hex")}.${extension}`;
+  await fs.promises.writeFile(path.join(AVATAR_UPLOAD_DIR, filename), file.buffer);
+  form.profile_image = `/uploads/avatars/${filename}`;
 }
 
 async function validateAdminUserPayload(payload, currentUserId = null, existingAccountNumber = "") {

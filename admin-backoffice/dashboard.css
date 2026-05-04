@@ -73,6 +73,9 @@
 .admin-user-card-meta,
 .admin-user-card-stats { flex-wrap: wrap; margin-top: 10px; font-size: 13px; }
 .admin-user-card-stats { font-weight: 700; }
+.admin-user-identity { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.admin-user-avatar { flex: 0 0 auto; width: 42px; height: 42px; display: grid; place-items: center; border-radius: 999px; background: linear-gradient(145deg, #235ed7, #86a9ff); background-position: center; background-size: cover; color: #fff !important; font-size: 12px; font-weight: 800; box-shadow: inset 0 0 0 2px rgba(255,255,255,.8), 0 10px 20px rgba(31,102,215,.18); }
+.admin-user-avatar.has-image { color: transparent !important; background-color: #dbe5f4; }
 .admin-detail-column { display: grid; gap: 22px; }
 .admin-create-panel.is-hidden,
 .admin-user-detail.is-hidden,

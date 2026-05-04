@@ -48,7 +48,8 @@ a { color: inherit; text-decoration: none; }
 .portal-topbar-right { gap: 18px; padding: 0 20px; }
 .portal-chip { position: relative; width: 28px; height: 28px; border: 2px solid rgba(255,255,255,.9); border-radius: 8px; }
 .portal-chip::after { content: attr(data-count); position: absolute; top: -9px; right: -10px; background: #ff5d5d; color: #fff; border-radius: 999px; min-width: 16px; height: 16px; padding: 0 4px; font-size: 10px; line-height: 16px; text-align: center; }
-.portal-avatar { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 999px; background: linear-gradient(180deg, #f5c7a8, #d4874f); color: #fff; font-size: 12px; font-weight: 700; box-shadow: inset 0 0 0 2px rgba(255,255,255,.7); }
+.portal-avatar { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 999px; background: linear-gradient(180deg, #f5c7a8, #d4874f); background-position: center; background-size: cover; color: #fff; font-size: 12px; font-weight: 700; box-shadow: inset 0 0 0 2px rgba(255,255,255,.7), 0 10px 24px rgba(38, 74, 132, .16); overflow: hidden; }
+.portal-avatar.has-image { background-color: #dbe5f4; color: transparent; box-shadow: inset 0 0 0 2px rgba(255,255,255,.9), 0 12px 28px rgba(38, 74, 132, .22); }
 .portal-layout { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 56px); }
 .portal-sidebar { background: #f8fbff; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
 .portal-profile-card { display: flex; align-items: center; gap: 14px; padding: 18px 20px; border-bottom: 1px solid var(--border); }
@@ -59,14 +60,15 @@ a { color: inherit; text-decoration: none; }
 .portal-profile-name { font-size: 15px; font-weight: 600; }
 .portal-profile-type { color: var(--muted); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
 .sidebar-icons { display: flex; gap: 20px; padding: 16px 24px; border-bottom: 1px solid var(--border); }
-.sidebar-icon { width: 32px; height: 32px; position: relative; display: grid; place-items: center; border-radius: 12px; background: #fff; border: 1px solid var(--border); color: var(--primary); }
+.sidebar-icon { width: 32px; height: 32px; position: relative; display: grid; place-items: center; border-radius: 12px; background: linear-gradient(180deg, #fff, #f4f7ff); border: 1px solid #dbe5f5; color: var(--primary); box-shadow: 0 8px 20px rgba(36, 89, 222, .08); }
 .sidebar-icon svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 .sidebar-icon.has-count::after { content: attr(data-count); position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; border-radius: 999px; background: #ff5d5d; color: #fff; font-size: 11px; line-height: 18px; text-align: center; }
 .nav-section-title { padding: 18px 28px 8px; color: var(--primary); font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }
 .portal-nav { display: flex; flex-direction: column; gap: 2px; padding: 0 12px; }
-.portal-nav a { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 12px; color: #31507b; font-size: 15px; }
-.portal-nav a.active, .portal-nav a:hover { background: rgba(36,89,222,.08); color: var(--primary); }
-.nav-glyph { width: 22px; text-align: center; font-size: 18px; line-height: 1; }
+.portal-nav a { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 12px; color: #31507b; font-size: 15px; transition: background .18s ease, color .18s ease, transform .18s ease; }
+.portal-nav a.active, .portal-nav a:hover { background: linear-gradient(90deg, rgba(36,89,222,.12), rgba(36,89,222,.05)); color: var(--primary); transform: translateX(2px); }
+.nav-glyph { width: 24px; height: 24px; display: inline-grid; place-items: center; color: currentColor; }
+.nav-glyph svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 .support-box { margin: auto 20px 20px; padding: 36px 20px 30px; border-radius: 10px; background: linear-gradient(180deg, #1b4ec1, #321f86); color: #fff; text-align: center; }
 .support-box h3 { margin: 0 0 8px; font-size: 23px; }
 .support-box p { margin: 0 0 18px; color: rgba(255,255,255,.74); }
