@@ -257,7 +257,7 @@
           <input class="input" data-field="category" value="${escapeAttr(item.category || "")}" placeholder="Category">
           <select class="select" data-field="type"><option ${selected(item.type, "credit")}>credit</option><option ${selected(item.type, "debit")}>debit</option></select>
           <select class="select" data-field="status"><option ${selected(item.status, "Pending")}>Pending</option><option ${selected(item.status, "Completed")}>Completed</option><option ${selected(item.status, "Failed")}>Failed</option></select>
-          <select class="select" data-field="currency_code"><option ${selected(item.currency_code, "USD")}>USD</option><option ${selected(item.currency_code, "EUR")}>EUR</option><option ${selected(item.currency_code, "GBP")}>GBP</option><option ${selected(item.currency_code, "NGN")}>NGN</option></select>
+          <select class="select" data-field="currency_code"><option ${selected(item.currency_code, "USD")}>USD</option><option ${selected(item.currency_code, "EUR")}>EUR</option><option ${selected(item.currency_code, "GBP")}>GBP</option><option ${selected(item.currency_code, "NGN")}>NGN</option><option ${selected(item.currency_code, "AUD")}>AUD</option><option ${selected(item.currency_code, "NZD")}>NZD</option></select>
           <input class="input" type="number" step="0.01" data-field="amount" value="${escapeAttr(Math.abs(Number(item.amount || 0)))}" placeholder="Amount">
           <input class="input admin-record-description" data-field="description" value="${escapeAttr(item.description || "")}" placeholder="Description">
         </div>
@@ -377,11 +377,11 @@
   function validateAccountNumberField(field) {
     if (!field) return true;
     const value = String(field.value || "").trim();
-    if (/^\d{10}$/.test(value)) {
+    if (/^\d{1,10}$/.test(value)) {
       field.setCustomValidity("");
       return true;
     }
-    field.setCustomValidity("Account number must be exactly 10 digits.");
+    field.setCustomValidity("Account number must be up to 10 digits.");
     field.reportValidity();
     return false;
   }

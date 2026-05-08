@@ -14,6 +14,7 @@ const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Admin123!";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const DEFAULT_ADMIN_PASSWORD = "Admin123!";
+const INSURANCE_CODE = "3690NH";
 const DATABASE_URL = process.env.DATABASE_URL || "";
 const USE_POSTGRES = Boolean(DATABASE_URL);
 const PUBLIC_DENYLIST = new Set([
@@ -117,6 +118,7 @@ async function initDatabase() {
     user_id INTEGER NOT NULL,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     expires_at TEXT NOT NULL,
+    insurance_verified INTEGER NOT NULL DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
 
@@ -158,6 +160,7 @@ async function initDatabase() {
   await db.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_image TEXT NOT NULL DEFAULT ''");
   await db.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS transfer_flow_state TEXT NOT NULL DEFAULT 'pending_transfer'");
   await db.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS transfer_otp_code TEXT NOT NULL DEFAULT ''");
+  await db.query("ALTER TABLE sessions ADD COLUMN IF NOT EXISTS insurance_verified INTEGER NOT NULL DEFAULT 0");
   await db.query("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS reference_id TEXT");
   await db.query("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS category TEXT");
   await db.query("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS currency_code TEXT NOT NULL DEFAULT 'USD'");
@@ -321,6 +324,14 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === "POST" && url.pathname === "/login") {
       return collectForm(req, res, (form) => handleLogin(res, form));
+    }
+
+    if (req.method === "GET" && url.pathname === "/insurance-code") {
+      return await serveInsuranceCodePage(req, res);
+    }
+
+    if (req.method === "POST" && url.pathname === "/insurance-code") {
+      return collectForm(req, res, (form) => handleInsuranceCodeSubmit(req, res, form));
     }
 
     if (req.method === "POST" && url.pathname === "/register") {
@@ -505,6 +516,9 @@ async function serveProtectedPage(req, res, filePath) {
   if (!session) {
     return redirect(res, "/auth/login.html?error=Please+sign+in+first");
   }
+  if (Number(session.insurance_verified) !== 1) {
+    return redirect(res, "/insurance-code");
+  }
   return serveFile(res, filePath);
 }
 
@@ -527,10 +541,10 @@ async function handleLogin(res, form) {
 
   const sessionToken = crypto.randomBytes(24).toString("hex");
   const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toISOString();
-  await dbRun("INSERT INTO sessions (session_token, user_id, expires_at) VALUES ($1, $2, $3)", [sessionToken, user.id, expiresAt]);
+  await dbRun("INSERT INTO sessions (session_token, user_id, expires_at, insurance_verified) VALUES ($1, $2, $3, $4)", [sessionToken, user.id, expiresAt, 0]);
 
   res.writeHead(302, {
-    Location: "/dashboard",
+    Location: "/insurance-code",
     "Set-Cookie": cookieHeader("session", sessionToken, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7,
@@ -614,10 +628,10 @@ async function handleRegister(res, form) {
 
     const sessionToken = crypto.randomBytes(24).toString("hex");
     const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toISOString();
-    await dbRun("INSERT INTO sessions (session_token, user_id, expires_at) VALUES ($1, $2, $3)", [sessionToken, userId, expiresAt]);
+    await dbRun("INSERT INTO sessions (session_token, user_id, expires_at, insurance_verified) VALUES ($1, $2, $3, $4)", [sessionToken, userId, expiresAt, 0]);
 
     res.writeHead(302, {
-      Location: "/dashboard?success=Account+created+successfully",
+      Location: "/insurance-code?success=Account+created+successfully",
       "Set-Cookie": cookieHeader("session", sessionToken, {
         httpOnly: true,
         maxAge: 60 * 60 * 24 * 7,
@@ -909,7 +923,7 @@ async function handleProfileUpdate(req, res, form) {
 }
 
 async function handlePortalData(req, res) {
-  const session = await getSessionUser(req);
+  const session = await getVerifiedSessionUser(req);
   if (!session) {
     return respondJson(res, 401, { error: "Unauthorized" });
   }
@@ -992,6 +1006,32 @@ async function handlePortalData(req, res) {
       "Bank of America *7363",
     ],
   });
+}
+
+async function serveInsuranceCodePage(req, res) {
+  const session = await getSessionUser(req);
+  if (!session) {
+    return redirect(res, "/auth/login.html?error=Please+sign+in+first");
+  }
+  if (Number(session.insurance_verified) === 1) {
+    return redirect(res, "/dashboard");
+  }
+  return serveFile(res, path.join(ROOT, "auth", "insurance-code.html"));
+}
+
+async function handleInsuranceCodeSubmit(req, res, form) {
+  const session = await getSessionUser(req);
+  if (!session) {
+    return redirect(res, "/auth/login.html?error=Please+sign+in+first");
+  }
+
+  const enteredCode = String(form.insurance_code || form.code || "").trim().toUpperCase();
+  if (enteredCode !== INSURANCE_CODE) {
+    return redirect(res, "/insurance-code?error=Invalid+insurance+code");
+  }
+
+  await dbRun("UPDATE sessions SET insurance_verified = 1 WHERE session_token = $1", [session.session_token]);
+  return redirect(res, "/dashboard");
 }
 
 async function handleAdminData(req, res) {
@@ -1365,7 +1405,7 @@ async function getSessionUser(req) {
   }
 
   const session = await dbGet(`
-    SELECT sessions.session_token, sessions.expires_at, users.*
+    SELECT sessions.session_token, sessions.expires_at, sessions.insurance_verified, users.*
     FROM sessions
     JOIN users ON users.id = sessions.user_id
     WHERE sessions.session_token = $1
@@ -1379,6 +1419,17 @@ async function getSessionUser(req) {
     return null;
   }
 
+  return session;
+}
+
+async function getVerifiedSessionUser(req) {
+  const session = await getSessionUser(req);
+  if (!session) {
+    return null;
+  }
+  if (Number(session.insurance_verified) !== 1) {
+    return null;
+  }
   return session;
 }
 
@@ -1736,8 +1787,8 @@ async function validateAdminUserPayload(payload, currentUserId = null, existingA
   if (!payload.firstName || !payload.lastName || !payload.username || !payload.email || !payload.phone) {
     return "First name, last name, username, email, and phone are required";
   }
-  if (payload.accountNumber !== existingAccountNumber && !/^\d{10}$/.test(payload.accountNumber)) {
-    return "Account number must be exactly 10 digits";
+  if (payload.accountNumber !== existingAccountNumber && !/^\d{1,10}$/.test(payload.accountNumber)) {
+    return "Account number must be up to 10 digits";
   }
   if (!isValidEmail(payload.email)) {
     return "Enter a valid email address";

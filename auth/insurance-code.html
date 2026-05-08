@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Insurance Code Required</title>
+  <link rel="shortcut icon" href="../admin/assets/images/favicon.ico">
+  <style>
+    :root {
+      --bg: #eef2f7;
+      --surface: rgba(255, 255, 255, 0.82);
+      --surface-strong: #ffffff;
+      --text: #0f172a;
+      --muted: #5b6473;
+      --line: rgba(15, 23, 42, 0.08);
+      --accent: #0f62fe;
+      --accent-2: #16a34a;
+      --danger: #dc2626;
+      --shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(15, 98, 254, 0.16), transparent 24%),
+        radial-gradient(circle at 85% 15%, rgba(22, 163, 74, 0.14), transparent 22%),
+        radial-gradient(circle at 30% 85%, rgba(15, 98, 254, 0.1), transparent 26%),
+        linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+      overflow-x: hidden;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ticker {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.82);
+      border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+      backdrop-filter: blur(14px);
+    }
+
+    .ticker-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 12px 18px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .ticker-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #0f172a;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+
+    .ticker-track {
+      min-width: 0;
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      white-space: nowrap;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1f2937;
+      animation: marquee 24s linear infinite;
+    }
+
+    .rate {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rate-pair { color: #667085; }
+    .rate-value { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+    .trend-up { color: var(--accent-2); }
+    .trend-down { color: var(--danger); }
+
+    .ticker-live {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, 0.1);
+      color: var(--accent-2);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 6px rgba(22, 163, 74, 0.12);
+    }
+
+    .content {
+      position: relative;
+      flex: 1;
+      display: grid;
+      place-items: center;
+      padding: 28px 16px 32px;
+    }
+
+    .orb {
+      position: absolute;
+      inset: auto;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      filter: blur(22px);
+      opacity: 0.22;
+      pointer-events: none;
+    }
+
+    .orb.one {
+      top: 6%;
+      right: -110px;
+      background: #0f62fe;
+    }
+
+    .orb.two {
+      bottom: 4%;
+      left: -120px;
+      background: #16a34a;
+    }
+
+    .panel {
+      width: min(100%, 920px);
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+
+    .hero {
+      position: relative;
+      padding: 34px 30px;
+      background:
+        radial-gradient(circle at top left, rgba(15, 98, 254, 0.14), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,0.84), rgba(255,255,255,0.68));
+      border-right: 1px solid var(--line);
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .mini-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 98, 254, 0.12);
+      background: rgba(255, 255, 255, 0.72);
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .lock-wrap {
+      width: 112px;
+      height: 112px;
+      border-radius: 34px;
+      margin-bottom: 24px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(135deg, #0f62fe, #0b3ea8);
+      box-shadow: 0 22px 45px rgba(15, 98, 254, 0.28);
+    }
+
+    .lock-wrap svg {
+      width: 50px;
+      height: 50px;
+      display: block;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: clamp(2.1rem, 4vw, 3.15rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .lead {
+      margin: 0 0 22px;
+      max-width: 40ch;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.75;
+    }
+
+    .hint-card {
+      display: grid;
+      gap: 8px;
+      padding: 18px 18px 16px;
+      border-radius: var(--radius-md);
+      background: rgba(15, 98, 254, 0.05);
+      border: 1px solid rgba(15, 98, 254, 0.12);
+      margin-bottom: 22px;
+    }
+
+    .hint-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: #64748b;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .hint-code {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      color: #0f62fe;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    .security-row {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .security-chip {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: #475569;
+      text-transform: uppercase;
+    }
+
+    .security-chip svg {
+      width: 14px;
+      height: 14px;
+      color: #0f62fe;
+      flex: 0 0 auto;
+    }
+
+    .form-side {
+      padding: 34px 30px;
+      background: rgba(255, 255, 255, 0.94);
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .section-copy {
+      margin: 0 0 26px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .error {
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(220, 38, 38, 0.08);
+      border: 1px solid rgba(220, 38, 38, 0.16);
+      color: #b91c1c;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .label-row label {
+      font-size: 14px;
+      font-weight: 800;
+      color: #334155;
+    }
+
+    .label-meta {
+      font-size: 11px;
+      font-weight: 800;
+      color: #94a3b8;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    input {
+      width: 100%;
+      height: 68px;
+      border-radius: 18px;
+      border: 1px solid #d8e0ea;
+      background: #fff;
+      color: var(--text);
+      padding: 0 64px 0 20px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    input::placeholder {
+      letter-spacing: normal;
+      font-size: 0.98rem;
+      font-weight: 500;
+      color: #94a3b8;
+      text-transform: none;
+    }
+
+    input:focus {
+      border-color: rgba(15, 98, 254, 0.55);
+      box-shadow: 0 0 0 4px rgba(15, 98, 254, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .suffix {
+      position: absolute;
+      top: 50%;
+      right: 18px;
+      transform: translateY(-50%);
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 24px;
+    }
+
+    .button {
+      width: 100%;
+      min-height: 58px;
+      border: 0;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 18px 35px rgba(15, 23, 42, 0.18);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 22px 40px rgba(15, 23, 42, 0.22);
+    }
+
+    .button:active {
+      transform: translateY(0);
+    }
+
+    .button[disabled] {
+      opacity: 0.72;
+      cursor: progress;
+    }
+
+    .footer-note {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(15, 23, 42, 0.07);
+      display: grid;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .footer-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .footer-row svg {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .footer-tags {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .footer-tag {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      text-align: center;
+      color: #475569;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+    }
+
+    .links {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .links a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .links a:hover {
+      color: #0f62fe;
+    }
+
+    .site-footer {
+      padding: 18px 16px 22px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 12px;
+      border-top: 1px solid rgba(15, 23, 42, 0.06);
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    @media (max-width: 920px) {
+      .panel {
+        grid-template-columns: 1fr;
+      }
+      .hero {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .ticker-inner {
+        padding: 10px 12px;
+        gap: 10px;
+      }
+
+      .ticker-label,
+      .ticker-live {
+        display: none;
+      }
+
+      .ticker-track {
+        gap: 18px;
+        font-size: 12px;
+      }
+
+      .content {
+        padding: 14px 10px 18px;
+      }
+
+      .panel {
+        width: 100%;
+        border-radius: 24px;
+      }
+
+      .hero,
+      .form-side {
+        padding: 22px 18px;
+      }
+
+      .lock-wrap {
+        width: 84px;
+        height: 84px;
+        border-radius: 26px;
+        margin-bottom: 18px;
+      }
+
+      .lock-wrap svg {
+        width: 38px;
+        height: 38px;
+      }
+
+      h1 {
+        font-size: 1.95rem;
+      }
+
+      .lead {
+        font-size: 0.95rem;
+        max-width: none;
+      }
+
+      .hint-code {
+        font-size: 1.12rem;
+        letter-spacing: 0.16em;
+      }
+
+      .security-row,
+      .footer-tags {
+        grid-template-columns: 1fr;
+      }
+
+      input {
+        height: 62px;
+        font-size: 1rem;
+      }
+
+      .actions {
+        margin-top: 20px;
+      }
+
+      .button {
+        min-height: 54px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="ticker">
+      <div class="ticker-inner">
+        <div class="ticker-label">Market Overview</div>
+        <div class="ticker-track" aria-hidden="true">
+          <span class="rate"><span class="rate-pair">GBP/EUR =</span> <span class="rate-value">1.17658</span> <span class="trend-up">▲</span></span>
+          <span class="rate"><span class="rate-pair">GBP/AUD =</span> <span class="rate-value">2.06062</span> <span class="trend-up">▲</span></span>
+          <span class="rate"><span class="rate-pair">GBP/USD =</span> <span class="rate-value">1.25431</span> <span class="trend-down">▼</span></span>
+          <span class="rate"><span class="rate-pair">EUR/USD =</span> <span class="rate-value">1.06582</span> <span class="trend-up">▲</span></span>
+          <span class="rate"><span class="rate-pair">GBP/EUR =</span> <span class="rate-value">1.17658</span> <span class="trend-up">▲</span></span>
+          <span class="rate"><span class="rate-pair">GBP/AUD =</span> <span class="rate-value">2.06062</span> <span class="trend-up">▲</span></span>
+          <span class="rate"><span class="rate-pair">GBP/USD =</span> <span class="rate-value">1.25431</span> <span class="trend-down">▼</span></span>
+          <span class="rate"><span class="rate-pair">EUR/USD =</span> <span class="rate-value">1.06582</span> <span class="trend-up">▲</span></span>
+        </div>
+        <div class="ticker-live"><span class="live-dot"></span>Live</div>
+      </div>
+    </div>
+
+    <main class="content">
+      <div class="orb one"></div>
+      <div class="orb two"></div>
+
+      <section class="panel">
+        <div class="hero">
+          <div class="badge-row">
+            <div class="mini-badge">Secure session</div>
+            <div class="mini-badge">Verified portal</div>
+          </div>
+
+          <div class="lock-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="10" width="16" height="10" rx="2"></rect>
+              <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+            </svg>
+          </div>
+
+          <h1>Insurance Code Required</h1>
+          <p class="lead">
+            The Federal Insurance code is required to complete this login session and open your dashboard.
+            Enter the code below to continue.
+          </p>
+
+          <div class="hint-card">
+            <div class="hint-label">Authorization Hint</div>
+            <div class="hint-code">USE:3690NH</div>
+          </div>
+
+          <div class="security-row">
+            <div class="security-chip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l7 4v6c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-4Z"></path>
+              </svg>
+              PCI-DSS
+            </div>
+            <div class="security-chip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V6l-8-4-8 4v6c0 6 8 10 8 10Z"></path>
+                <path d="M9 12l2 2 4-4"></path>
+              </svg>
+              256-Bit
+            </div>
+            <div class="security-chip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 1v22"></path>
+                <path d="M5 5h14"></path>
+                <path d="M5 19h14"></path>
+              </svg>
+              Secure
+            </div>
+          </div>
+        </div>
+
+        <div class="form-side">
+          <h2 class="section-title">Enter Insurance Code</h2>
+          <p class="section-copy">
+            One valid code is enough to continue. No additional verification is needed after it is accepted.
+          </p>
+
+          <div id="error-box" class="error" hidden></div>
+
+          <form method="post" action="/insurance-code" autocomplete="off">
+            <div class="field">
+              <div class="label-row">
+                <label for="insurance_code">Insurance Code</label>
+                <span class="label-meta">Secure field</span>
+              </div>
+              <div class="input-wrap">
+                <input
+                  id="insurance_code"
+                  name="insurance_code"
+                  type="text"
+                  inputmode="text"
+                  maxlength="12"
+                  placeholder="Enter code"
+                  required
+                  autofocus
+                >
+                <span class="suffix">IC</span>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="button" type="submit">
+                <span>Authorize & Continue</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </button>
+            </div>
+          </form>
+
+          <div class="footer-note">
+            <div class="footer-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 8v4"></path>
+                <path d="M12 16h.01"></path>
+              </svg>
+              <p>
+                We have security measures in place to safeguard your account. Once the code is accepted,
+                you will be sent straight to the dashboard.
+              </p>
+            </div>
+
+            <div class="footer-tags">
+              <div class="footer-tag">Encrypted</div>
+              <div class="footer-tag">Monitored</div>
+              <div class="footer-tag">Protected</div>
+            </div>
+          </div>
+
+          <div class="links">
+            <a href="#">Trouble accessing?</a>
+            <a href="#">Security Policy</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      &copy; 2026 Federal Security Systems. All transactions are encrypted and monitored.
+    </footer>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get("error");
+    const box = document.getElementById("error-box");
+    if (error) {
+      box.hidden = false;
+      box.textContent = error.replace(/\+/g, " ");
+    }
+
+    const input = document.getElementById("insurance_code");
+    input.addEventListener("input", () => {
+      input.value = input.value.toUpperCase().replace(/\s+/g, "");
+    });
+  </script>
+</body>
+</html>
