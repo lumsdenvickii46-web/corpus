@@ -20,6 +20,8 @@
             <div class="panel-title-row"><h2 class="panel-title">Confirm Transactions</h2></div>
             <form action="/wire-transfer" method="post" data-transfer-form>
               <input type="hidden" name="otp_code" value="">
+              <input type="hidden" name="fdic_code" value="">
+              <input type="hidden" name="banking_code" value="">
               <div class="form-grid">
                 <div class="form-field"><label>Amount <span class="accent">(USD)</span></label><input class="input" type="number" step="0.01" min="1" name="amount" required></div>
                 <div class="form-field"><label>Currency</label><select class="select" name="currency_code"><option>USD</option><option>EUR</option><option>GBP</option><option>NGN</option></select></div>
@@ -51,6 +53,30 @@
       </main>
     </div>
     <div class="floating-actions"><div class="floating-pill dark"><span class="floating-toggle"></span><span>Dark Colors</span></div><div class="floating-pill chat">Live Chat</div></div>
+  </div>
+
+  <div class="transfer-modal-overlay" id="transfer-fdic-modal">
+    <div class="transfer-modal-card">
+      <button class="transfer-modal-close" type="button" data-close-modal>Cancel</button>
+      <h2>FDIC Insurance</h2>
+      <p>Enter your FDIC Insurance code to verify the transfer.</p>
+      <form>
+        <div class="form-field"><label>FDIC Code</label><input class="input" id="fdic_code_input" placeholder="Enter your FDIC code" required></div>
+        <div class="form-actions"><button class="btn btn-primary" type="submit">Verify</button></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="transfer-modal-overlay" id="transfer-banking-modal">
+    <div class="transfer-modal-card">
+      <button class="transfer-modal-close" type="button" data-close-modal>Cancel</button>
+      <h2>Banking Verification</h2>
+      <p>Enter your banking code to continue.</p>
+      <form>
+        <div class="form-field"><label>Banking Code</label><input class="input" id="banking_code_input" placeholder="Enter your banking code" required></div>
+        <div class="form-actions"><button class="btn btn-primary" type="submit">Verify</button></div>
+      </form>
+    </div>
   </div>
 
   <div class="transfer-modal-overlay" id="transfer-confirm-modal">

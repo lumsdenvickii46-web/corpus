@@ -54,11 +54,30 @@
   }
 
   function renderDashboard(data) {
-    setText("account-balance", formatMoney(data.summary.availableBalance));
+    animateValue("account-balance", 0, data.summary.availableBalance, 1500, currentCurrency);
     setText("loan-amount", formatMoney(data.summary.loanAmount));
     setText("recent-transaction-count", String(data.summary.transactionCount));
     renderRecentTransactions(data.recentTransactions);
     renderChart(data.chart.labels, data.chart.values);
+  }
+
+  function animateValue(id, start, end, duration, currency) {
+    const obj = document.getElementById(id);
+    if (!obj) return;
+    let startTimestamp = null;
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      const current = start + easeOut * (end - start);
+      obj.textContent = formatMoney(current, currency);
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      } else {
+        obj.textContent = formatMoney(end, currency);
+      }
+    };
+    window.requestAnimationFrame(step);
   }
 
   function renderLoan(data) {
@@ -182,13 +201,22 @@
     const transferForm = document.querySelector("[data-transfer-form]");
     const confirmModal = document.getElementById("transfer-confirm-modal");
     const otpModal = document.getElementById("transfer-otp-modal");
+    const fdicModal = document.getElementById("transfer-fdic-modal");
+    const bankingModal = document.getElementById("transfer-banking-modal");
     if (!transferForm || !confirmModal || !otpModal) return;
 
     const confirmBody = document.getElementById("transfer-confirm-body");
     const proceedButton = document.getElementById("transfer-proceed-button");
     const otpInput = document.getElementById("otp_code");
     const hiddenOtp = transferForm.querySelector('input[name="otp_code"]');
+    const hiddenFdic = transferForm.querySelector('input[name="fdic_code"]');
+    const hiddenBanking = transferForm.querySelector('input[name="banking_code"]');
     const otpForm = otpModal.querySelector("form");
+    const fdicForm = fdicModal ? fdicModal.querySelector("form") : null;
+    const bankingForm = bankingModal ? bankingModal.querySelector("form") : null;
+    const fdicInput = fdicModal ? fdicModal.querySelector("#fdic_code_input") : null;
+    const bankingInput = bankingModal ? bankingModal.querySelector("#banking_code_input") : null;
+
     const otpSubmitButton = otpForm.querySelector('button[type="submit"]');
     const transferState = params.get("transfer_state");
     const shouldResumeTransfer = params.get("resume_transfer") === "1";
@@ -203,16 +231,30 @@
     confirmModal.querySelector(".form-actions").append(confirmSpinner);
     otpForm.append(otpSpinner);
     otpForm.insertBefore(transferNote, otpForm.firstChild);
+    
+    const fdicSpinner = createSpinnerRow("Verifying FDIC code...");
+    if (fdicForm) fdicForm.append(fdicSpinner);
+    const fdicSubmitButton = fdicForm ? fdicForm.querySelector('button[type="submit"]') : null;
+
+    const bankingSpinner = createSpinnerRow("Verifying Banking code...");
+    if (bankingForm) bankingForm.append(bankingSpinner);
+    const bankingSubmitButton = bankingForm ? bankingForm.querySelector('button[type="submit"]') : null;
 
     transferForm.addEventListener("submit", (event) => {
       event.preventDefault();
       hiddenOtp.value = "";
       otpInput.value = "";
+      if (hiddenFdic) hiddenFdic.value = "";
+      if (fdicInput) fdicInput.value = "";
+      if (hiddenBanking) hiddenBanking.value = "";
+      if (bankingInput) bankingInput.value = "";
+
       setButtonLoading(proceedButton, false);
       setButtonLoading(otpSubmitButton, false);
       toggleSpinner(confirmSpinner, false);
       toggleSpinner(otpSpinner, false);
       toggleTransferNote(transferNote, false);
+
       const data = new FormData(transferForm);
       const rows = [
         ["Bank Name", data.get("bank_name") || ""],
@@ -222,20 +264,68 @@
         ["Account Type", data.get("account_type") || ""],
       ];
       confirmBody.innerHTML = rows.map(([label, value]) => `<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(String(value))}</td></tr>`).join("");
-      confirmModal.classList.add("is-open");
+
+      if (fdicModal) {
+        fdicModal.classList.add("is-open");
+        if (fdicInput) fdicInput.focus();
+      } else {
+        confirmModal.classList.add("is-open");
+      }
     });
 
-    confirmModal.querySelectorAll("[data-close-modal]").forEach((node) => {
-      node.addEventListener("click", () => confirmModal.classList.remove("is-open"));
-    });
-    otpModal.querySelectorAll("[data-close-modal]").forEach((node) => {
-      node.addEventListener("click", () => {
-        otpModal.classList.remove("is-open");
-        if (transferState === "invalid_otp" || shouldResumeTransfer) {
+    if (fdicForm) {
+      fdicForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        setButtonLoading(fdicSubmitButton, true);
+        toggleSpinner(fdicSpinner, true);
+        
+        window.setTimeout(() => {
+          setButtonLoading(fdicSubmitButton, false);
+          toggleSpinner(fdicSpinner, false);
+          hiddenFdic.value = fdicInput.value.trim();
+          fdicModal.classList.remove("is-open");
+          if (bankingModal) {
+            bankingModal.classList.add("is-open");
+            if (bankingInput) bankingInput.focus();
+          } else {
+            confirmModal.classList.add("is-open");
+          }
+        }, 2000);
+      });
+    }
+
+    if (bankingForm) {
+      bankingForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        setButtonLoading(bankingSubmitButton, true);
+        toggleSpinner(bankingSpinner, true);
+
+        window.setTimeout(() => {
+          setButtonLoading(bankingSubmitButton, false);
+          toggleSpinner(bankingSpinner, false);
+          hiddenBanking.value = bankingInput.value.trim();
+          bankingModal.classList.remove("is-open");
           confirmModal.classList.add("is-open");
-        }
+        }, 2000);
+      });
+    }
+
+    [confirmModal, otpModal, fdicModal, bankingModal].forEach((modal) => {
+      if (!modal) return;
+      modal.querySelectorAll("[data-close-modal]").forEach((node) => {
+        node.addEventListener("click", () => modal.classList.remove("is-open"));
       });
     });
+    if (otpModal) {
+      otpModal.querySelectorAll("[data-close-modal]").forEach((node) => {
+        node.addEventListener("click", () => {
+          otpModal.classList.remove("is-open");
+          if (transferState === "invalid_otp" || shouldResumeTransfer) {
+            confirmModal.classList.add("is-open");
+          }
+        });
+      });
+    }
     proceedButton.addEventListener("click", () => {
       setButtonLoading(proceedButton, true);
       toggleSpinner(confirmSpinner, true);
@@ -276,6 +366,8 @@
         payload[key] = value;
       });
       payload.otp_code = otpValue || "";
+      payload.fdic_code = hiddenFdic ? hiddenFdic.value : "";
+      payload.banking_code = hiddenBanking ? hiddenBanking.value : "";
       window.sessionStorage.setItem(transferStorageKey, JSON.stringify(payload));
     }
 
@@ -286,13 +378,15 @@
       try {
         const payload = JSON.parse(raw);
         formNode.querySelectorAll("[name]").forEach((field) => {
-          if (field.name === "otp_code") return;
+          if (field.name === "otp_code" || field.name === "fdic_code" || field.name === "banking_code") return;
           if (!(field.name in payload)) return;
           field.value = payload[field.name];
         });
         if (payload.otp_code) {
           otpNode.value = payload.otp_code;
         }
+        if (payload.fdic_code && hiddenFdic) hiddenFdic.value = payload.fdic_code;
+        if (payload.banking_code && hiddenBanking) hiddenBanking.value = payload.banking_code;
       } catch (error) {
         window.sessionStorage.removeItem(transferStorageKey);
       }
@@ -442,49 +536,90 @@
     const chartWidth = width - padding.left - padding.right;
     const chartHeight = height - padding.top - padding.bottom;
 
-    context.clearRect(0, 0, width, height);
-    context.fillStyle = "#ffffff";
-    context.fillRect(0, 0, width, height);
-    context.strokeStyle = "#ebf0f8";
-    for (let i = 0; i < 4; i += 1) {
-      const y = padding.top + (chartHeight / 3) * i;
+    let startTime = null;
+    const duration = 1200;
+
+    function draw(progress) {
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, width, height);
+      context.strokeStyle = "#ebf0f8";
+      for (let i = 0; i < 4; i += 1) {
+        const y = padding.top + (chartHeight / 3) * i;
+        context.beginPath();
+        context.moveTo(padding.left, y);
+        context.lineTo(width - padding.right, y);
+        context.stroke();
+      }
+
       context.beginPath();
-      context.moveTo(padding.left, y);
-      context.lineTo(width - padding.right, y);
+      const points = values.map((value, index) => {
+        const x = padding.left + (chartWidth / Math.max(values.length - 1, 1)) * index;
+        const ratio = (value - min) / Math.max(max - min, 1);
+        const targetY = padding.top + chartHeight - ratio * chartHeight;
+        
+        const startY = padding.top + chartHeight;
+        const y = startY + (targetY - startY) * progress;
+        return {x, y};
+      });
+
+      if (points.length > 0) {
+        context.moveTo(points[0].x, points[0].y);
+        for (let i = 0; i < points.length - 1; i++) {
+          const p1 = points[i];
+          const p2 = points[i + 1];
+
+          // Use horizontal control points for a smooth S-curve between any 2 points
+          const cp1x = (p1.x + p2.x) / 2;
+          const cp1y = p1.y;
+          const cp2x = (p1.x + p2.x) / 2;
+          const cp2y = p2.y;
+
+          context.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y);
+        }
+      }
+      context.strokeStyle = "#2b63de";
+      context.lineWidth = 3;
       context.stroke();
+      
+      context.fillStyle = "#2b63de";
+      values.forEach((value, index) => {
+        const x = padding.left + (chartWidth / Math.max(values.length - 1, 1)) * index;
+        const ratio = (value - min) / Math.max(max - min, 1);
+        const targetY = padding.top + chartHeight - ratio * chartHeight;
+        
+        const startY = padding.top + chartHeight;
+        const y = startY + (targetY - startY) * progress;
+
+        context.beginPath();
+        context.arc(x, y, 3.2 * Math.max(progress, 0.01), 0, Math.PI * 2);
+        context.fill();
+        context.beginPath();
+        context.fillStyle = "#fff";
+        context.arc(x, y, 1.5 * Math.max(progress, 0.01), 0, Math.PI * 2);
+        context.fill();
+        context.fillStyle = "#2b63de";
+      });
+      
+      context.fillStyle = "#9aa6b7";
+      context.font = "12px HK Grotesk";
+      labels.forEach((label, index) => {
+        const x = padding.left + (chartWidth / Math.max(labels.length - 1, 1)) * index;
+        context.fillText(label, x - 10, height - 8);
+      });
     }
 
-    context.beginPath();
-    values.forEach((value, index) => {
-      const x = padding.left + (chartWidth / Math.max(values.length - 1, 1)) * index;
-      const ratio = (value - min) / Math.max(max - min, 1);
-      const y = padding.top + chartHeight - ratio * chartHeight;
-      if (index === 0) context.moveTo(x, y);
-      else context.lineTo(x, y);
-    });
-    context.strokeStyle = "#2b63de";
-    context.lineWidth = 3;
-    context.stroke();
-    context.fillStyle = "#2b63de";
-    values.forEach((value, index) => {
-      const x = padding.left + (chartWidth / Math.max(values.length - 1, 1)) * index;
-      const ratio = (value - min) / Math.max(max - min, 1);
-      const y = padding.top + chartHeight - ratio * chartHeight;
-      context.beginPath();
-      context.arc(x, y, 3.2, 0, Math.PI * 2);
-      context.fill();
-      context.beginPath();
-      context.fillStyle = "#fff";
-      context.arc(x, y, 1.5, 0, Math.PI * 2);
-      context.fill();
-      context.fillStyle = "#2b63de";
-    });
-    context.fillStyle = "#9aa6b7";
-    context.font = "12px HK Grotesk";
-    labels.forEach((label, index) => {
-      const x = padding.left + (chartWidth / Math.max(labels.length - 1, 1)) * index;
-      context.fillText(label, x - 10, height - 8);
-    });
+    function animate(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const rawProgress = Math.min((timestamp - startTime) / duration, 1);
+      const progress = 1 - Math.pow(1 - rawProgress, 3);
+      draw(progress);
+      if (rawProgress < 1) {
+        window.requestAnimationFrame(animate);
+      }
+    }
+    
+    window.requestAnimationFrame(animate);
   }
 
   function renderFlash(error, success) {

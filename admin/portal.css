@@ -160,6 +160,7 @@ table.portal-table { width: 100%; border-collapse: collapse; }
 .transaction-detail-status .status-pill { font-size: 13px; }
 .transfer-result-state { margin: 0 0 16px; }
 .transfer-result-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+.show-on-mobile { display: none; }
 
 .admin-shell { min-height: 100vh; background: #eef3fb; }
 .admin-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 28px; background: #12284a; color: #fff; }
@@ -224,7 +225,9 @@ table.portal-table { width: 100%; border-collapse: collapse; }
   body[data-page="dashboard"] .panel-grid.cards { gap: 14px; margin-bottom: 14px; }
   body[data-page="dashboard"] .panel-grid.two-thirds { gap: 14px; }
   body[data-page="dashboard"] .summary-panel { min-height: 116px; }
-  body[data-page="dashboard"] .support-alert { min-height: 116px; }
+  body[data-page="dashboard"] .support-alert { display: none !important; }
+  .hide-on-mobile { display: none !important; }
+  .show-on-mobile { display: block; margin-bottom: 20px; }
   body[data-page="dashboard"] .chart-box canvas { height: 190px; }
 }
 

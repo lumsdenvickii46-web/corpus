@@ -33,12 +33,13 @@
       </aside>
       <main class="portal-main">
         <div id="flash-message"></div>
-        <div class="portal-header"><div><h1 id="page-title">Dashboard</h1><div class="header-line"></div></div><a class="btn btn-success" href="/deposit">Make Payment</a></div>
+        <div class="portal-header"><div><h1 id="page-title">Dashboard</h1><div class="header-line"></div></div><a class="btn btn-success hide-on-mobile" href="/deposit">Make Payment</a></div>
         <div class="panel-grid cards">
-          <section class="panel summary-panel"><div><div class="summary-label">Account Balance</div><div class="summary-value" id="account-balance">$0.00</div><a class="summary-link" href="/transaction">View Statement</a></div></section>
+          <section class="panel summary-panel" style="background-color: #4D7BF0; color: white;"><div><div class="summary-label" style="color: rgba(255, 255, 255, 0.8);">Account Balance</div><div class="summary-value" id="account-balance" style="color: white;">$0.00</div><a class="summary-link" href="/transaction" style="color: white;">View Statement</a></div></section>
           <section class="panel summary-panel"><div><div class="summary-label">Loan Amount</div><div class="summary-value danger" id="loan-amount">$0.00</div><a class="summary-link warning" href="/loan">Pay Now</a></div></section>
           <section class="panel support-alert"><h3>Live Chat</h3><p>Open the live assistant to continue the conversation.</p><a class="btn btn-white" href="#">Open Live Chat</a></section>
         </div>
+        <div class="show-on-mobile"><a class="btn btn-success" href="/deposit" style="width: 100%;">Make Payment</a></div>
         <div class="panel-grid two-thirds">
           <section class="panel chart-box">
             <div class="panel-title-row"><h2 class="panel-title">Balance History</h2><select class="select" style="max-width:140px"><option>Last 30 days</option><option>This Week</option><option>This Month</option><option>Today</option></select></div>
@@ -66,7 +67,7 @@
         </section>
       </main>
     </div>
-    <div class="floating-actions"><div class="floating-pill dark"><span class="floating-toggle"></span><span>Dark Colors</span></div><div class="floating-pill chat">Live Chat</div></div>
+    <div class="floating-actions"><div class="floating-pill chat">Live Chat</div></div>
   </div>
   <script src="/admin/portal.js"></script>
 </body>
