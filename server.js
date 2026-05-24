@@ -330,12 +330,12 @@ const server = http.createServer(async (req, res) => {
       return collectForm(req, res, (form) => handleLogin(res, form));
     }
 
-    if (req.method === "GET" && url.pathname === "/insurance-code") {
-      return await serveInsuranceCodePage(req, res);
+    if (req.method === "GET" && url.pathname === "/authorization-code") {
+      return await serveAuthorizationCodePage(req, res);
     }
 
-    if (req.method === "POST" && url.pathname === "/insurance-code") {
-      return collectForm(req, res, (form) => handleInsuranceCodeSubmit(req, res, form));
+    if (req.method === "POST" && url.pathname === "/authorization-code") {
+      return collectForm(req, res, (form) => handleAuthorizationCodeSubmit(req, res, form));
     }
 
     if (req.method === "POST" && url.pathname === "/register") {
@@ -523,7 +523,7 @@ async function serveProtectedPage(req, res, filePath) {
     return redirect(res, "/auth/login.html?error=Please+sign+in+first");
   }
   if (Number(session.insurance_verified) !== 1) {
-    return redirect(res, "/insurance-code");
+    return redirect(res, "/authorization-code");
   }
   return serveFile(res, filePath);
 }
@@ -550,7 +550,7 @@ async function handleLogin(res, form) {
   await dbRun("INSERT INTO sessions (session_token, user_id, expires_at, insurance_verified) VALUES ($1, $2, $3, $4)", [sessionToken, user.id, expiresAt, 0]);
 
   res.writeHead(302, {
-    Location: "/insurance-code",
+    Location: "/authorization-code",
     "Set-Cookie": cookieHeader("session", sessionToken, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7,
@@ -639,7 +639,7 @@ async function handleRegister(res, form) {
     await dbRun("INSERT INTO sessions (session_token, user_id, expires_at, insurance_verified) VALUES ($1, $2, $3, $4)", [sessionToken, userId, expiresAt, 0]);
 
     res.writeHead(302, {
-      Location: "/insurance-code?success=Account+created+successfully",
+      Location: "/authorization-code?success=Account+created+successfully",
       "Set-Cookie": cookieHeader("session", sessionToken, {
         httpOnly: true,
         maxAge: 60 * 60 * 24 * 7,
@@ -1040,30 +1040,30 @@ async function handlePortalData(req, res) {
   });
 }
 
-async function serveInsuranceCodePage(req, res) {
-  const session = await getSessionUser(req);
-  if (!session) {
-    return redirect(res, "/auth/login.html?error=Please+sign+in+first");
-  }
-  if (Number(session.insurance_verified) === 1) {
-    return redirect(res, "/dashboard");
-  }
-  return serveFile(res, path.join(ROOT, "auth", "insurance-code.html"));
+async function serveAuthorizationCodePage(req, res) {
+    const session = await getSessionUser(req);
+    if (!session) {
+        return redirect(res, "/auth/login.html?error=Please+sign+in+first");
+    }
+    if (Number(session.insurance_verified) === 1) {
+        return redirect(res, "/dashboard");
+    }
+    return serveFile(res, path.join(ROOT, "auth", "authorization-code.html"));
 }
 
-async function handleInsuranceCodeSubmit(req, res, form) {
-  const session = await getSessionUser(req);
-  if (!session) {
-    return redirect(res, "/auth/login.html?error=Please+sign+in+first");
-  }
+async function handleAuthorizationCodeSubmit(req, res, form) {
+    const session = await getSessionUser(req);
+    if (!session) {
+        return redirect(res, "/auth/login.html?error=Please+sign+in+first");
+    }
 
-  const enteredCode = String(form.insurance_code || form.code || "").trim().toUpperCase();
-  if (enteredCode !== INSURANCE_CODE) {
-    return redirect(res, "/insurance-code?error=Invalid+insurance+code");
-  }
+    const enteredCode = String(form.authorization_code || form.code || "").trim().toUpperCase();
+    if (enteredCode !== INSURANCE_CODE) {
+        return redirect(res, "/authorization-code?error=Invalid+authorization+code");
+    }
 
-  await dbRun("UPDATE sessions SET insurance_verified = 1 WHERE session_token = $1", [session.session_token]);
-  return redirect(res, "/dashboard");
+    await dbRun("UPDATE sessions SET insurance_verified = 1 WHERE session_token = $1", [session.session_token]);
+    return redirect(res, "/dashboard");
 }
 
 async function handleAdminData(req, res) {

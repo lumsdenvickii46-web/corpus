@@ -949,7 +949,22 @@
             }
 
             countrySelect.addEventListener("change", syncCountryName);
-            document.querySelector("form[action='/register']").addEventListener("submit", syncCountryName);
+            document.querySelector("form[action='/register']").addEventListener("submit", (e) => {
+                syncCountryName();
+                
+                // Parse the 3-letter currency code from the selected option text
+                const currencySelect = document.getElementById("acct_currency");
+                if (currencySelect) {
+                    const selectedOpt = currencySelect.options[currencySelect.selectedIndex];
+                    if (selectedOpt && selectedOpt.value && !isNaN(selectedOpt.value)) {
+                        const match = selectedOpt.text.match(/([A-Z]{3})\(/);
+                        if (match) {
+                            selectedOpt.value = match[1];
+                        }
+                    }
+                    currencySelect.name = "preferred_currency";
+                }
+            });
         </script>
 
 <footer class="footer">

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Insurance Code Required</title>
+  <title>Authorization Code Required</title>
   <link rel="shortcut icon" href="../admin/assets/images/favicon.ico">
   <style>
     :root {
@@ -632,9 +632,9 @@
             </svg>
           </div>
 
-          <h1>Insurance Code Required</h1>
+          <h1>Authorization Code Required</h1>
           <p class="lead">
-            The Federal Insurance code is required to complete this login session and open your dashboard.
+            An authorization code is required to complete this login session and open your dashboard.
             Enter the code below to continue.
           </p>
 
@@ -669,23 +669,23 @@
         </div>
 
         <div class="form-side">
-          <h2 class="section-title">Enter Insurance Code</h2>
+          <h2 class="section-title">Enter Authorization Code</h2>
           <p class="section-copy">
             One valid code is enough to continue. No additional verification is needed after it is accepted.
           </p>
 
           <div id="error-box" class="error" hidden></div>
 
-          <form method="post" action="/insurance-code" autocomplete="off">
+          <form method="post" action="/authorization-code" autocomplete="off">
             <div class="field">
               <div class="label-row">
-                <label for="insurance_code">Insurance Code</label>
+                <label for="authorization_code">Authorization Code</label>
                 <span class="label-meta">Secure field</span>
               </div>
               <div class="input-wrap">
                 <input
-                  id="insurance_code"
-                  name="insurance_code"
+                  id="authorization_code"
+                  name="authorization_code"
                   type="text"
                   inputmode="text"
                   maxlength="12"
@@ -693,7 +693,7 @@
                   required
                   autofocus
                 >
-                <span class="suffix">IC</span>
+                <span class="suffix">AC</span>
               </div>
             </div>
 
@@ -750,7 +750,7 @@
       box.textContent = error.replace(/\+/g, " ");
     }
 
-    const input = document.getElementById("insurance_code");
+    const input = document.getElementById("authorization_code");
     input.addEventListener("input", () => {
       input.value = input.value.toUpperCase().replace(/\s+/g, "");
     });
