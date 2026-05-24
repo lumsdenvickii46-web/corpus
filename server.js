@@ -597,6 +597,8 @@ async function handleRegister(res, form) {
   const accountNumber = await nextAccountNumber();
   const passwordHash = hashPassword(password);
 
+  const preferredCurrency = (form.preferred_currency || "USD").trim().toUpperCase();
+
   try {
     const result = await dbRun(createUserSql, [
       accountNumber,
@@ -615,7 +617,7 @@ async function handleRegister(res, form) {
       occupation,
       address,
       profileImage,
-      "USD",
+      preferredCurrency,
       "pending_transfer",
       "",
       "",
@@ -631,7 +633,7 @@ async function handleRegister(res, form) {
       description: "Opening Balance",
       amount: 0,
       status: "Completed",
-      currencyCode: "USD",
+      currencyCode: preferredCurrency,
     });
 
     const sessionToken = crypto.randomBytes(24).toString("hex");

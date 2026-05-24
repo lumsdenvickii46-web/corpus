@@ -51,6 +51,24 @@
     setText("top-balance", formatMoney(data.summary.availableBalance));
     setText("top-ending", data.user.accountNumber.slice(-4));
     attachProfileLinks();
+
+    document.querySelectorAll(".money-row span, .accent").forEach(span => {
+      if (span.textContent.includes("USD")) {
+        span.textContent = span.textContent.replace("USD", currentCurrency);
+      }
+    });
+    
+    document.querySelectorAll("select[name='currency_code']").forEach(select => {
+      if (Array.from(select.options).some(opt => opt.value === currentCurrency || opt.text === currentCurrency)) {
+        select.value = currentCurrency;
+      } else {
+        const opt = document.createElement("option");
+        opt.value = currentCurrency;
+        opt.text = currentCurrency;
+        select.add(opt, select.options[0]);
+        select.value = currentCurrency;
+      }
+    });
   }
 
   function renderDashboard(data) {
