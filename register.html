@@ -453,8 +453,8 @@
                                                     
                                                     <div class="col-sm-6">
                                                         <div class="mb-3">
-                                                            <label for="acct_ssn" class="form-label">Zipcode <span class="text-danger">*</span></label>
-                                                            <input class="form-control" name="zip_code" id="acct_ssn"/>
+                                                            <label for="zip_code" class="form-label">Zipcode <span class="text-danger">*</span></label>
+                                                            <input class="form-control" name="zip_code" id="zip_code"/>
                                                             <div class="invalid-feedback">
                                                                 Please Enter Zipcode
                                                             </div>
@@ -505,344 +505,174 @@
                                                     <div class="col-sm-6">
                                                         <div class="mb-3">
                                                             <label for="acct_currency" class="form-label">Currency</label>
-                                                            <select class="form-control" name="acct_currency" id="acct_currency" required>
-                                                                <option selected disabled>--Select Currency--</option>
-                                                                                                                                    <option value="1">
-                                                                        ALL(Lek)</option>
-                                                                                                                                    <option value="2">
-                                                                        USD($)</option>
-                                                                                                                                    <option value="3">
-                                                                        AFN(؋)</option>
-                                                                                                                                    <option value="4">
-                                                                        ARS($)</option>
-                                                                                                                                    <option value="5">
-                                                                        AWG(ƒ)</option>
-                                                                                                                                    <option value="6">
-                                                                        AUD($)</option>
-                                                                                                                                    <option value="7">
-                                                                        AZN(ман)</option>
-                                                                                                                                    <option value="8">
-                                                                        BSD($)</option>
-                                                                                                                                    <option value="9">
-                                                                        BBD($)</option>
-                                                                                                                                    <option value="10">
-                                                                        BYR(p.)</option>
-                                                                                                                                    <option value="11">
-                                                                        EUR(€)</option>
-                                                                                                                                    <option value="12">
-                                                                        BZD(BZ$)</option>
-                                                                                                                                    <option value="13">
-                                                                        BMD($)</option>
-                                                                                                                                    <option value="14">
-                                                                        BOB($b)</option>
-                                                                                                                                    <option value="15">
-                                                                        BAM(KM)</option>
-                                                                                                                                    <option value="16">
-                                                                        BWP(P)</option>
-                                                                                                                                    <option value="17">
-                                                                        BGN(лв)</option>
-                                                                                                                                    <option value="18">
-                                                                        BRL(R$)</option>
-                                                                                                                                    <option value="19">
-                                                                        GBP(£)</option>
-                                                                                                                                    <option value="20">
-                                                                        BND($)</option>
-                                                                                                                                    <option value="21">
-                                                                        KHR(៛)</option>
-                                                                                                                                    <option value="22">
-                                                                        CAD($)</option>
-                                                                                                                                    <option value="23">
-                                                                        KYD($)</option>
-                                                                                                                                    <option value="24">
-                                                                        CLP($)</option>
-                                                                                                                                    <option value="25">
-                                                                        CNY(¥)</option>
-                                                                                                                                    <option value="26">
-                                                                        COP($)</option>
-                                                                                                                                    <option value="27">
-                                                                        CRC(₡)</option>
-                                                                                                                                    <option value="28">
-                                                                        HRK(kn)</option>
-                                                                                                                                    <option value="29">
-                                                                        CUP(₱)</option>
-                                                                                                                                    <option value="30">
-                                                                        CZK(Kč)</option>
-                                                                                                                                    <option value="31">
-                                                                        DKK(kr)</option>
-                                                                                                                                    <option value="32">
-                                                                        DOP(RD$)</option>
-                                                                                                                                    <option value="33">
-                                                                        XCD($)</option>
-                                                                                                                                    <option value="34">
-                                                                        EGP(£)</option>
-                                                                                                                                    <option value="35">
-                                                                        SVC($)</option>
-                                                                                                                                    <option value="36">
-                                                                        FKP(£)</option>
-                                                                                                                                    <option value="37">
-                                                                        FJD($)</option>
-                                                                                                                                    <option value="38">
-                                                                        GHC(¢)</option>
-                                                                                                                                    <option value="39">
-                                                                        GIP(£)</option>
-                                                                                                                                    <option value="40">
-                                                                        GTQ(Q)</option>
-                                                                                                                                    <option value="41">
-                                                                        GGP(£)</option>
-                                                                                                                                    <option value="42">
-                                                                        GYD($)</option>
-                                                                                                                                    <option value="43">
-                                                                        HNL(L)</option>
-                                                                                                                                    <option value="44">
-                                                                        HKD($)</option>
-                                                                                                                                    <option value="45">
-                                                                        HUF(Ft)</option>
-                                                                                                                                    <option value="46">
-                                                                        ISK(kr)</option>
-                                                                                                                                    <option value="47">
-                                                                        INR(₹)</option>
-                                                                                                                                    <option value="48">
-                                                                        IDR(Rp)</option>
-                                                                                                                                    <option value="49">
-                                                                        IRR(﷼)</option>
-                                                                                                                                    <option value="50">
-                                                                        IMP(£)</option>
-                                                                                                                                    <option value="51">
-                                                                        ILS(₪)</option>
-                                                                                                                                    <option value="52">
-                                                                        JMD(J$)</option>
-                                                                                                                                    <option value="53">
-                                                                        JPY(¥)</option>
-                                                                                                                                    <option value="54">
-                                                                        JEP(£)</option>
-                                                                                                                                    <option value="55">
-                                                                        KZT(лв)</option>
-                                                                                                                                    <option value="56">
-                                                                        KPW(₩)</option>
-                                                                                                                                    <option value="57">
-                                                                        KRW(₩)</option>
-                                                                                                                                    <option value="58">
-                                                                        KGS(лв)</option>
-                                                                                                                                    <option value="59">
-                                                                        LAK(₭)</option>
-                                                                                                                                    <option value="60">
-                                                                        LVL(Ls)</option>
-                                                                                                                                    <option value="61">
-                                                                        LBP(£)</option>
-                                                                                                                                    <option value="62">
-                                                                        LRD($)</option>
-                                                                                                                                    <option value="63">
-                                                                        CHF(CHF)</option>
-                                                                                                                                    <option value="64">
-                                                                        LTL(Lt)</option>
-                                                                                                                                    <option value="65">
-                                                                        MKD(ден)</option>
-                                                                                                                                    <option value="66">
-                                                                        MYR(RM)</option>
-                                                                                                                                    <option value="67">
-                                                                        MUR(₨)</option>
-                                                                                                                                    <option value="68">
-                                                                        MXN($)</option>
-                                                                                                                                    <option value="69">
-                                                                        MNT(₮)</option>
-                                                                                                                                    <option value="70">
-                                                                        MZN(MT)</option>
-                                                                                                                                    <option value="71">
-                                                                        NAD($)</option>
-                                                                                                                                    <option value="72">
-                                                                        NPR(₨)</option>
-                                                                                                                                    <option value="73">
-                                                                        ANG(ƒ)</option>
-                                                                                                                                    <option value="74">
-                                                                        NZD($)</option>
-                                                                                                                                    <option value="75">
-                                                                        NIO(C$)</option>
-                                                                                                                                    <option value="76">
-                                                                        NGN(₦)</option>
-                                                                                                                                    <option value="77">
-                                                                        NOK(kr)</option>
-                                                                                                                                    <option value="78">
-                                                                        OMR(﷼)</option>
-                                                                                                                                    <option value="79">
-                                                                        PKR(₨)</option>
-                                                                                                                                    <option value="80">
-                                                                        PAB(B/.)</option>
-                                                                                                                                    <option value="81">
-                                                                        PYG(Gs)</option>
-                                                                                                                                    <option value="82">
-                                                                        PEN(S/.)</option>
-                                                                                                                                    <option value="83">
-                                                                        PHP(Php)</option>
-                                                                                                                                    <option value="84">
-                                                                        PLN(zł)</option>
-                                                                                                                                    <option value="85">
-                                                                        QAR(﷼)</option>
-                                                                                                                                    <option value="86">
-                                                                        RON(lei)</option>
-                                                                                                                                    <option value="87">
-                                                                        RUB(руб)</option>
-                                                                                                                                    <option value="88">
-                                                                        SHP(£)</option>
-                                                                                                                                    <option value="89">
-                                                                        SAR(﷼)</option>
-                                                                                                                                    <option value="90">
-                                                                        RSD(Дин.)</option>
-                                                                                                                                    <option value="91">
-                                                                        SCR(₨)</option>
-                                                                                                                                    <option value="92">
-                                                                        SGD($)</option>
-                                                                                                                                    <option value="93">
-                                                                        SBD($)</option>
-                                                                                                                                    <option value="94">
-                                                                        SOS(S)</option>
-                                                                                                                                    <option value="95">
-                                                                        ZAR(R)</option>
-                                                                                                                                    <option value="96">
-                                                                        LKR(₨)</option>
-                                                                                                                                    <option value="97">
-                                                                        SEK(kr)</option>
-                                                                                                                                    <option value="98">
-                                                                        SRD($)</option>
-                                                                                                                                    <option value="99">
-                                                                        SYP(£)</option>
-                                                                                                                                    <option value="100">
-                                                                        TWD(NT$)</option>
-                                                                                                                                    <option value="101">
-                                                                        THB(฿)</option>
-                                                                                                                                    <option value="102">
-                                                                        TTD(TT$)</option>
-                                                                                                                                    <option value="103">
-                                                                        TRY(₺)</option>
-                                                                                                                                    <option value="104">
-                                                                        TRL(£)</option>
-                                                                                                                                    <option value="105">
-                                                                        TVD($)</option>
-                                                                                                                                    <option value="106">
-                                                                        UAH(₴)</option>
-                                                                                                                                    <option value="107">
-                                                                        UYU($U)</option>
-                                                                                                                                    <option value="108">
-                                                                        UZS(лв)</option>
-                                                                                                                                    <option value="109">
-                                                                        VEF(Bs)</option>
-                                                                                                                                    <option value="110">
-                                                                        VND(₫)</option>
-                                                                                                                                    <option value="111">
-                                                                        YER(﷼)</option>
-                                                                                                                                    <option value="112">
-                                                                        ZWD(Z$)</option>
-                                                                                                                                    <option value="113">
-                                                                        DZD(DA)</option>
-                                                                                                                                    <option value="114">
-                                                                        AOA(Kz)</option>
-                                                                                                                                    <option value="115">
-                                                                        AMD(֏)</option>
-                                                                                                                                    <option value="116">
-                                                                        BHD(BD)</option>
-                                                                                                                                    <option value="117">
-                                                                        BDT(৳)</option>
-                                                                                                                                    <option value="118">
-                                                                        XOF(CFA)</option>
-                                                                                                                                    <option value="119">
-                                                                        BIF(FBu)</option>
-                                                                                                                                    <option value="120">
-                                                                        XAF(FCFA)</option>
-                                                                                                                                    <option value="121">
-                                                                        CVE(Esc)</option>
-                                                                                                                                    <option value="122">
-                                                                        KMF(CF)</option>
-                                                                                                                                    <option value="123">
-                                                                        DJF(Fdj)</option>
-                                                                                                                                    <option value="124">
-                                                                        DOP(RD$)</option>
-                                                                                                                                    <option value="125">
-                                                                        ERN(Nkf)</option>
-                                                                                                                                    <option value="126">
-                                                                        ETB(Br)</option>
-                                                                                                                                    <option value="127">
-                                                                        XPF(₣)</option>
-                                                                                                                                    <option value="128">
-                                                                        GMD(D)</option>
-                                                                                                                                    <option value="129">
-                                                                        GEL(ლ)</option>
-                                                                                                                                    <option value="130">
-                                                                        GHS(GH₵)</option>
-                                                                                                                                    <option value="131">
-                                                                        GNF(FG)</option>
-                                                                                                                                    <option value="132">
-                                                                        IQD(ع.د)</option>
-                                                                                                                                    <option value="133">
-                                                                        JOD(د.ا)</option>
-                                                                                                                                    <option value="134">
-                                                                        KES(Ksh)</option>
-                                                                                                                                    <option value="135">
-                                                                        KWD(د.ك)</option>
-                                                                                                                                    <option value="136">
-                                                                        LYD(ل.د)</option>
-                                                                                                                                    <option value="137">
-                                                                        MOP(MOP$)</option>
-                                                                                                                                    <option value="138">
-                                                                        MGA(Ar)</option>
-                                                                                                                                    <option value="139">
-                                                                        MWK(MK)</option>
-                                                                                                                                    <option value="140">
-                                                                        MVR(Rf)</option>
-                                                                                                                                    <option value="141">
-                                                                        MRO(UM)</option>
-                                                                                                                                    <option value="142">
-                                                                        MDL(L)</option>
-                                                                                                                                    <option value="143">
-                                                                        MAD(MAD)</option>
-                                                                                                                                    <option value="144">
-                                                                        MMK(K)</option>
-                                                                                                                                    <option value="145">
-                                                                        PGK(K)</option>
-                                                                                                                                    <option value="146">
-                                                                        RWF(R₣)</option>
-                                                                                                                                    <option value="147">
-                                                                        WST(WS$)</option>
-                                                                                                                                    <option value="148">
-                                                                        STD(Db)</option>
-                                                                                                                                    <option value="149">
-                                                                        SLL(Le)</option>
-                                                                                                                                    <option value="150">
-                                                                        SSP(£)</option>
-                                                                                                                                    <option value="151">
-                                                                        SDG(ج.س)</option>
-                                                                                                                                    <option value="152">
-                                                                        SZL(L)</option>
-                                                                                                                                    <option value="153">
-                                                                        TJS(ЅM)</option>
-                                                                                                                                    <option value="154">
-                                                                        TZS(TSh)</option>
-                                                                                                                                    <option value="155">
-                                                                        TOP(T$)</option>
-                                                                                                                                    <option value="156">
-                                                                        TND(DT)</option>
-                                                                                                                                    <option value="157">
-                                                                        TMT(T)</option>
-                                                                                                                                    <option value="158">
-                                                                        UGX(USh)</option>
-                                                                                                                                    <option value="159">
-                                                                        AED(د.إ)</option>
-                                                                                                                                    <option value="160">
-                                                                        VUV(VT)</option>
-                                                                                                                                    <option value="161">
-                                                                        ZMW(ZK)</option>
-                                                                                                                                    <option value="162">
-                                                                        ZWL($)</option>
-                                                                                                                            </select>
+                                                            <select class="form-control" name="preferred_currency" id="preferred_currency" required>
+                                                                <option selected disabled value="">--Select Currency--</option>
+                                                                <option value="ALL">ALL (Lek)</option>
+                                                                <option value="USD">USD ($)</option>
+                                                                <option value="AFN">AFN (؋)</option>
+                                                                <option value="ARS">ARS ($)</option>
+                                                                <option value="AWG">AWG (ƒ)</option>
+                                                                <option value="AUD">AUD ($)</option>
+                                                                <option value="AZN">AZN (ман)</option>
+                                                                <option value="BSD">BSD ($)</option>
+                                                                <option value="BBD">BBD ($)</option>
+                                                                <option value="BYR">BYR (p.)</option>
+                                                                <option value="EUR">EUR (€)</option>
+                                                                <option value="BZD">BZD (BZ$)</option>
+                                                                <option value="BMD">BMD ($)</option>
+                                                                <option value="BOB">BOB ($b)</option>
+                                                                <option value="BAM">BAM (KM)</option>
+                                                                <option value="BWP">BWP (P)</option>
+                                                                <option value="BGN">BGN (лв)</option>
+                                                                <option value="BRL">BRL (R$)</option>
+                                                                <option value="GBP">GBP (£)</option>
+                                                                <option value="BND">BND ($)</option>
+                                                                <option value="KHR">KHR (៛)</option>
+                                                                <option value="CAD">CAD ($)</option>
+                                                                <option value="KYD">KYD ($)</option>
+                                                                <option value="CLP">CLP ($)</option>
+                                                                <option value="CNY">CNY (¥)</option>
+                                                                <option value="COP">COP ($)</option>
+                                                                <option value="CRC">CRC (₡)</option>
+                                                                <option value="HRK">HRK (kn)</option>
+                                                                <option value="CUP">CUP (₱)</option>
+                                                                <option value="CZK">CZK (Kč)</option>
+                                                                <option value="DKK">DKK (kr)</option>
+                                                                <option value="DOP">DOP (RD$)</option>
+                                                                <option value="XCD">XCD ($)</option>
+                                                                <option value="EGP">EGP (£)</option>
+                                                                <option value="SVC">SVC ($)</option>
+                                                                <option value="FKP">FKP (£)</option>
+                                                                <option value="FJD">FJD ($)</option>
+                                                                <option value="GHC">GHC (¢)</option>
+                                                                <option value="GIP">GIP (£)</option>
+                                                                <option value="GTQ">GTQ (Q)</option>
+                                                                <option value="GGP">GGP (£)</option>
+                                                                <option value="GYD">GYD ($)</option>
+                                                                <option value="HNL">HNL (L)</option>
+                                                                <option value="HKD">HKD ($)</option>
+                                                                <option value="HUF">HUF (Ft)</option>
+                                                                <option value="ISK">ISK (kr)</option>
+                                                                <option value="INR">INR (₹)</option>
+                                                                <option value="IDR">IDR (Rp)</option>
+                                                                <option value="IRR">IRR (﷼)</option>
+                                                                <option value="IMP">IMP (£)</option>
+                                                                <option value="ILS">ILS (₪)</option>
+                                                                <option value="JMD">JMD (J$)</option>
+                                                                <option value="JPY">JPY (¥)</option>
+                                                                <option value="JEP">JEP (£)</option>
+                                                                <option value="KZT">KZT (лв)</option>
+                                                                <option value="KPW">KPW (₩)</option>
+                                                                <option value="KRW">KRW (₩)</option>
+                                                                <option value="KGS">KGS (лв)</option>
+                                                                <option value="LAK">LAK (₭)</option>
+                                                                <option value="LVL">LVL (Ls)</option>
+                                                                <option value="LBP">LBP (£)</option>
+                                                                <option value="LRD">LRD ($)</option>
+                                                                <option value="CHF">CHF (CHF)</option>
+                                                                <option value="LTL">LTL (Lt)</option>
+                                                                <option value="MKD">MKD (ден)</option>
+                                                                <option value="MYR">MYR (RM)</option>
+                                                                <option value="MUR">MUR (₨)</option>
+                                                                <option value="MXN">MXN ($)</option>
+                                                                <option value="MNT">MNT (₮)</option>
+                                                                <option value="MZN">MZN (MT)</option>
+                                                                <option value="NAD">NAD ($)</option>
+                                                                <option value="NPR">NPR (₨)</option>
+                                                                <option value="ANG">ANG (ƒ)</option>
+                                                                <option value="NZD">NZD ($)</option>
+                                                                <option value="NIO">NIO (C$)</option>
+                                                                <option value="NGN">NGN (₦)</option>
+                                                                <option value="NOK">NOK (kr)</option>
+                                                                <option value="OMR">OMR (﷼)</option>
+                                                                <option value="PKR">PKR (₨)</option>
+                                                                <option value="PAB">PAB (B/.)</option>
+                                                                <option value="PYG">PYG (Gs)</option>
+                                                                <option value="PEN">PEN (S/.)</option>
+                                                                <option value="PHP">PHP (Php)</option>
+                                                                <option value="PLN">PLN (zł)</option>
+                                                                <option value="QAR">QAR (﷼)</option>
+                                                                <option value="RON">RON (lei)</option>
+                                                                <option value="RUB">RUB (руб)</option>
+                                                                <option value="SHP">SHP (£)</option>
+                                                                <option value="SAR">SAR (﷼)</option>
+                                                                <option value="RSD">RSD (Дин.)</option>
+                                                                <option value="SCR">SCR (₨)</option>
+                                                                <option value="SGD">SGD ($)</option>
+                                                                <option value="SBD">SBD ($)</option>
+                                                                <option value="SOS">SOS (S)</option>
+                                                                <option value="ZAR">ZAR (R)</option>
+                                                                <option value="LKR">LKR (₨)</option>
+                                                                <option value="SEK">SEK (kr)</option>
+                                                                <option value="SRD">SRD ($)</option>
+                                                                <option value="SYP">SYP (£)</option>
+                                                                <option value="TWD">TWD (NT$)</option>
+                                                                <option value="THB">THB (฿)</option>
+                                                                <option value="TTD">TTD (TT$)</option>
+                                                                <option value="TRY">TRY (₺)</option>
+                                                                <option value="TRL">TRL (£)</option>
+                                                                <option value="TVD">TVD ($)</option>
+                                                                <option value="UAH">UAH (₴)</option>
+                                                                <option value="UYU">UYU ($U)</option>
+                                                                <option value="UZS">UZS (лв)</option>
+                                                                <option value="VEF">VEF (Bs)</option>
+                                                                <option value="VND">VND (₫)</option>
+                                                                <option value="YER">YER (﷼)</option>
+                                                                <option value="ZWD">ZWD (Z$)</option>
+                                                                <option value="DZD">DZD (DA)</option>
+                                                                <option value="AOA">AOA (Kz)</option>
+                                                                <option value="AMD">AMD (֏)</option>
+                                                                <option value="BHD">BHD (BD)</option>
+                                                                <option value="BDT">BDT (৳)</option>
+                                                                <option value="XOF">XOF (CFA)</option>
+                                                                <option value="BIF">BIF (FBu)</option>
+                                                                <option value="XAF">XAF (FCFA)</option>
+                                                                <option value="CVE">CVE (Esc)</option>
+                                                                <option value="KMF">KMF (CF)</option>
+                                                                <option value="DJF">DJF (Fdj)</option>
+                                                                <option value="DOP">DOP (RD$)</option>
+                                                                <option value="ERN">ERN (Nkf)</option>
+                                                                <option value="ETB">ETB (Br)</option>
+                                                                <option value="XPF">XPF (₣)</option>
+                                                                <option value="GMD">GMD (D)</option>
+                                                                <option value="GEL">GEL (ლ)</option>
+                                                                <option value="GHS">GHS (GH₵)</option>
+                                                                <option value="GNF">GNF (FG)</option>
+                                                                <option value="IQD">IQD (ع.د)</option>
+                                                                <option value="JOD">JOD (د.ا)</option>
+                                                                <option value="KES">KES (Ksh)</option>
+                                                                <option value="KWD">KWD (د.ك)</option>
+                                                                <option value="LYD">LYD (ل.د)</option>
+                                                                <option value="MOP">MOP (MOP$)</option>
+                                                                <option value="MGA">MGA (Ar)</option>
+                                                                <option value="MWK">MWK (MK)</option>
+                                                                <option value="MVR">MVR (Rf)</option>
+                                                                <option value="MRO">MRO (UM)</option>
+                                                                <option value="MDL">MDL (L)</option>
+                                                                <option value="MAD">MAD (MAD)</option>
+                                                                <option value="MMK">MMK (K)</option>
+                                                                <option value="PGK">PGK (K)</option>
+                                                                <option value="RWF">RWF (R₣)</option>
+                                                                <option value="WST">WST (WS$)</option>
+                                                                <option value="STD">STD (Db)</option>
+                                                                <option value="SLL">SLL (Le)</option>
+                                                                <option value="SSP">SSP (£)</option>
+                                                                <option value="SDG">SDG (ج.س)</option>
+                                                                <option value="SZL">SZL (L)</option>
+                                                                <option value="TJS">TJS (ЅM)</option>
+                                                                <option value="TZS">TZS (TSh)</option>
+                                                                <option value="TOP">TOP (T$)</option>
+                                                                <option value="TND">TND (DT)</option>
+                                                                <option value="TMT">TMT (T)</option>
+                                                                <option value="UGX">UGX (USh)</option>
+                                                                <option value="AED">AED (د.إ)</option>
+                                                                <option value="VUV">VUV (VT)</option>
+                                                                <option value="ZMW">ZMW (ZK)</option>
+                                                                <option value="ZWL">ZWL ($)</option>
+                                                            </select>
                                                         </div>
                                                     </div>
-                                                    <div class="col-sm-6">
-                                                        <div class="mb-3">
-                                                            <label for="acct_ssn" class="form-label">SSN <span class="text-danger">*</span></label>
-                                                            <input class="form-control" name="acct_ssn" id="acct_ssn"/>
-                                                            <div class="invalid-feedback">
-                                                                Please Enter SSN
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    
                                                     <div class="col-sm-12">
                                                         <div class="mb-3">
                                                             <label for="acct_occupation" class="form-label">Occupation <span class="text-danger">*</span></label>
@@ -952,18 +782,7 @@
             document.querySelector("form[action='/register']").addEventListener("submit", (e) => {
                 syncCountryName();
                 
-                // Parse the 3-letter currency code from the selected option text
-                const currencySelect = document.getElementById("acct_currency");
-                if (currencySelect) {
-                    const selectedOpt = currencySelect.options[currencySelect.selectedIndex];
-                    if (selectedOpt && selectedOpt.value && !isNaN(selectedOpt.value)) {
-                        const match = selectedOpt.text.match(/([A-Z]{3})\(/);
-                        if (match) {
-                            selectedOpt.value = match[1];
-                        }
-                    }
-                    currencySelect.name = "preferred_currency";
-                }
+                
             });
         </script>
 
